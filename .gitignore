@@ -1,0 +1,7 @@
+.idea/
+*.sln.DotSettings.user
+bin/
+obj/
+*.user
+.vscode/
+.DS_Store
