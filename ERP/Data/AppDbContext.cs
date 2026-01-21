@@ -7,5 +7,6 @@ namespace ERP.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
         // You will add your tables here later
+        public DbSet<ERP.Models.Employe> Employes { get; set; }
     }
 }

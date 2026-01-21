@@ -1,8 +1,43 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Accueil";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center hero-section">
+    <h1 class="hero-title">Gestion RH Moderne</h1>
+    <p class="lead mb-4">Centralisez, gérez et optimisez vos ressources humaines sur une seule plateforme.</p>
+    <a href="/Employes" class="btn btn-custom btn-lg">Accéder aux Dossiers Employés</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card p-4 text-center">
+            <div class="card-body">
+                <div class="card-icon">📂</div> <h3 class="card-title">Dossiers Personnels</h3>
+                <p class="card-text text-muted">Gérez les informations essentielles, contrats et coordonnées de chaque collaborateur.</p>
+                <a href="/Employes" class="btn btn-outline-primary mt-3">Gérer</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card p-4 text-center">
+            <div class="card-body">
+                <div class="card-icon">🚀</div>
+                <h3 class="card-title">Recrutement</h3>
+                <p class="card-text text-muted">Suivez les candidatures et optimisez votre processus d'embauche facilement.</p>
+                <button class="btn btn-outline-secondary mt-3" disabled>Bientôt disponible</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card p-4 text-center">
+            <div class="card-body">
+                <div class="card-icon">💰</div>
+                <h3 class="card-title">Paie & Avantages</h3>
+                <p class="card-text text-muted">Administrez les rémunérations et suivez l'évolution salariale.</p>
+                <button class="btn btn-outline-secondary mt-3" disabled>Bientôt disponible</button>
+            </div>
+        </div>
+    </div>
 </div>
