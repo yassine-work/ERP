@@ -26,5 +26,10 @@ namespace ERP.Models
 
         [DataType(DataType.Date)]
         public DateTime DateEmbauche { get; set; }
+
+        public ICollection<Salaire> Salaires { get; set; }
+
+        
+        public ICollection<EmployeAvantage> EmployeAvantages { get; set; }
     }
 }
