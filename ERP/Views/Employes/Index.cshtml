@@ -31,7 +31,7 @@
                 @Html.DisplayNameFor(model => model.Adresse)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Poste)
+                Poste
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DateEmbauche)
@@ -61,7 +61,7 @@
                 @Html.DisplayFor(modelItem => item.Adresse)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Poste)
+                @item.Poste.Title (@item.Poste.Department)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DateEmbauche)

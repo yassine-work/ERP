@@ -1,0 +1,22 @@
+@model ERP.Models.AdvantageType
+
+@{
+    ViewData["Title"] = "Edit Advantage Type";
+}
+
+<div class="container mt-4">
+    <h2>Edit Advantage Type</h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="AdvantageTypeId" />
+
+        <div class="mb-3">
+            <label asp-for="AdvantageTypeName" class="form-label"></label>
+            <input asp-for="AdvantageTypeName" class="form-control" />
+            <span asp-validation-for="AdvantageTypeName" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </form>
+</div>

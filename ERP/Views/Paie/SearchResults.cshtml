@@ -1,0 +1,51 @@
+@model IEnumerable<ERP.Models.Employe>
+
+@{
+    ViewData["Title"] = "Résultats de recherche";
+    var searchTerm = ViewBag.SearchTerm as string;
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4>Résultats de recherche pour: "@searchTerm"</h4>
+        </div>
+        <div class="card-body">
+            <p>Plusieurs employés trouvés. Sélectionnez celui que vous souhaitez consulter:</p>
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nom Complet</th>
+                        <th>Poste</th>
+                        <th>Département</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in Model)
+                    {
+                        <tr>
+                            <td>@employee.Nom @employee.Prenom</td>
+                            <td>@employee.Poste.Title</td>
+                            <td>@employee.Poste.Department</td>
+                            <td>@employee.Email</td>
+                            <td>
+                                <a asp-action="EmployeePackage" 
+                                   asp-route-employeeId="@employee.Id" 
+                                   class="btn btn-sm btn-primary">
+                                    Voir Package
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="mt-3">
+                <a asp-action="Index" class="btn btn-secondary">Nouvelle recherche</a>
+            </div>
+        </div>
+    </div>
+</div>

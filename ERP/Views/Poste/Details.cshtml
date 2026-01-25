@@ -1,0 +1,19 @@
+@model ERP.Models.Poste
+@{
+    ViewBag.Title = "Post Details";
+}
+
+<h2>Post Details</h2>
+
+<div class="mb-3">
+    <strong>Title:</strong> @Model.Title
+</div>
+<div class="mb-3">
+    <strong>Department:</strong> @Model.Department
+</div>
+<div class="mb-3">
+    <strong>Minimum Salary:</strong> @Model.MinimumBaseSalary.ToString("C")
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.PosteId" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>

@@ -4,6 +4,7 @@ using ERP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260123222942_TablesPosteAdvantagesBonusesAllowancesCompensation")]
+    partial class TablesPosteAdvantagesBonusesAllowancesCompensation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,14 +36,6 @@ namespace ERP.Migrations
                     b.Property<string>("AdvantageTypeName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EligibilityRule")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Provider")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("AdvantageTypeId");
 
@@ -169,11 +164,19 @@ namespace ERP.Migrations
                     b.Property<int>("CompensationPackageId")
                         .HasColumnType("int");
 
+                    b.Property<string>("EligibilityRule")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Provider")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -208,12 +211,6 @@ namespace ERP.Migrations
                     b.Property<int>("CompensationPackageId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EffectiveFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EffectiveTo")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Frequency")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -245,9 +242,6 @@ namespace ERP.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("AwardedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("BonusRule")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -269,9 +263,6 @@ namespace ERP.Migrations
 
                     b.Property<bool>("IsTaxable")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ValidUntil")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("EmployeeBonusId");
 
@@ -305,204 +296,6 @@ namespace ERP.Migrations
                     b.HasKey("PosteId");
 
                     b.ToTable("Postes");
-
-                    b.HasData(
-                        new
-                        {
-                            PosteId = 1,
-                            Department = "IT",
-                            MinimumBaseSalary = 2500m,
-                            Title = "Junior Developer"
-                        },
-                        new
-                        {
-                            PosteId = 2,
-                            Department = "IT",
-                            MinimumBaseSalary = 5000m,
-                            Title = "Senior Developer"
-                        },
-                        new
-                        {
-                            PosteId = 3,
-                            Department = "IT",
-                            MinimumBaseSalary = 4000m,
-                            Title = "Full Stack Developer"
-                        },
-                        new
-                        {
-                            PosteId = 4,
-                            Department = "IT",
-                            MinimumBaseSalary = 4500m,
-                            Title = "DevOps Engineer"
-                        },
-                        new
-                        {
-                            PosteId = 5,
-                            Department = "IT",
-                            MinimumBaseSalary = 7000m,
-                            Title = "IT Manager"
-                        },
-                        new
-                        {
-                            PosteId = 6,
-                            Department = "IT",
-                            MinimumBaseSalary = 3500m,
-                            Title = "System Administrator"
-                        },
-                        new
-                        {
-                            PosteId = 7,
-                            Department = "IT",
-                            MinimumBaseSalary = 3000m,
-                            Title = "QA Engineer"
-                        },
-                        new
-                        {
-                            PosteId = 8,
-                            Department = "Human Resources",
-                            MinimumBaseSalary = 3000m,
-                            Title = "HR Specialist"
-                        },
-                        new
-                        {
-                            PosteId = 9,
-                            Department = "Human Resources",
-                            MinimumBaseSalary = 2800m,
-                            Title = "Recruiter"
-                        },
-                        new
-                        {
-                            PosteId = 10,
-                            Department = "Human Resources",
-                            MinimumBaseSalary = 5500m,
-                            Title = "HR Manager"
-                        },
-                        new
-                        {
-                            PosteId = 11,
-                            Department = "Human Resources",
-                            MinimumBaseSalary = 3200m,
-                            Title = "Training Coordinator"
-                        },
-                        new
-                        {
-                            PosteId = 12,
-                            Department = "Human Resources",
-                            MinimumBaseSalary = 3000m,
-                            Title = "Payroll Specialist"
-                        },
-                        new
-                        {
-                            PosteId = 13,
-                            Department = "Finance",
-                            MinimumBaseSalary = 3200m,
-                            Title = "Accountant"
-                        },
-                        new
-                        {
-                            PosteId = 14,
-                            Department = "Finance",
-                            MinimumBaseSalary = 4000m,
-                            Title = "Financial Analyst"
-                        },
-                        new
-                        {
-                            PosteId = 15,
-                            Department = "Finance",
-                            MinimumBaseSalary = 4500m,
-                            Title = "Senior Accountant"
-                        },
-                        new
-                        {
-                            PosteId = 16,
-                            Department = "Finance",
-                            MinimumBaseSalary = 6000m,
-                            Title = "Finance Manager"
-                        },
-                        new
-                        {
-                            PosteId = 17,
-                            Department = "Sales",
-                            MinimumBaseSalary = 2500m,
-                            Title = "Sales Representative"
-                        },
-                        new
-                        {
-                            PosteId = 18,
-                            Department = "Sales",
-                            MinimumBaseSalary = 5000m,
-                            Title = "Sales Manager"
-                        },
-                        new
-                        {
-                            PosteId = 19,
-                            Department = "Marketing",
-                            MinimumBaseSalary = 3200m,
-                            Title = "Marketing Specialist"
-                        },
-                        new
-                        {
-                            PosteId = 20,
-                            Department = "Marketing",
-                            MinimumBaseSalary = 4500m,
-                            Title = "Digital Marketing Manager"
-                        },
-                        new
-                        {
-                            PosteId = 21,
-                            Department = "Marketing",
-                            MinimumBaseSalary = 2800m,
-                            Title = "Content Creator"
-                        },
-                        new
-                        {
-                            PosteId = 22,
-                            Department = "Operations",
-                            MinimumBaseSalary = 5500m,
-                            Title = "Operations Manager"
-                        },
-                        new
-                        {
-                            PosteId = 23,
-                            Department = "Operations",
-                            MinimumBaseSalary = 4500m,
-                            Title = "Project Manager"
-                        },
-                        new
-                        {
-                            PosteId = 24,
-                            Department = "Operations",
-                            MinimumBaseSalary = 2200m,
-                            Title = "Administrative Assistant"
-                        },
-                        new
-                        {
-                            PosteId = 25,
-                            Department = "Operations",
-                            MinimumBaseSalary = 3800m,
-                            Title = "Business Analyst"
-                        },
-                        new
-                        {
-                            PosteId = 26,
-                            Department = "Customer Support",
-                            MinimumBaseSalary = 2400m,
-                            Title = "Customer Support Agent"
-                        },
-                        new
-                        {
-                            PosteId = 27,
-                            Department = "Customer Support",
-                            MinimumBaseSalary = 4200m,
-                            Title = "Customer Support Manager"
-                        },
-                        new
-                        {
-                            PosteId = 28,
-                            Department = "Customer Support",
-                            MinimumBaseSalary = 3000m,
-                            Title = "Technical Support Specialist"
-                        });
                 });
 
             modelBuilder.Entity("ERP.Models.CompensationPackage", b =>

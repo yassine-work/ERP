@@ -1,0 +1,22 @@
+@model ERP.Models.AllowanceType
+
+@{
+    ViewData["Title"] = "Edit Allowance Type";
+}
+
+<div class="container mt-4">
+    <h2>Edit Allowance Type</h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="AllowanceTypeId" />
+
+        <div class="mb-3">
+            <label asp-for="AllowanceTypeName" class="form-label"></label>
+            <input asp-for="AllowanceTypeName" class="form-control" />
+            <span asp-validation-for="AllowanceTypeName" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </form>
+</div>

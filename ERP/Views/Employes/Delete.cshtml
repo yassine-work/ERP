@@ -48,10 +48,10 @@
             @Html.DisplayFor(model => model.Adresse)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Poste)
+            Poste
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Poste)
+            @Model.Poste.Title (@Model.Poste.Department)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DateEmbauche)

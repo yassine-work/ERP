@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Paie & Avantages";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Paie & Avantages</h3>
+                    <p class="mb-0">Administrez les rémunérations et suivez l'évolution salariale</p>
+                </div>
+                <div class="card-body p-5">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Search" method="post" class="mb-4">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" 
+                                   name="employeeName" 
+                                   class="form-control" 
+                                   placeholder="Rechercher un employé par nom ou prénom..." 
+                                   required 
+                                   autofocus />
+                            <button type="submit" class="btn btn-primary">
+                                Rechercher
+                            </button>
+                        </div>
+                        <small class="form-text text-muted mt-2">
+                            Entrez le nom ou prénom de l'employé pour afficher son package de rémunération
+                        </small>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a asp-controller="Employes" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-people"></i> Voir tous les employés
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,46 +12,68 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
             <div class="form-group">
                 <label asp-for="Nom" class="control-label"></label>
                 <input asp-for="Nom" class="form-control" />
                 <span asp-validation-for="Nom" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="Prenom" class="control-label"></label>
                 <input asp-for="Prenom" class="form-control" />
                 <span asp-validation-for="Prenom" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="DateNaissance" class="control-label"></label>
-                <input asp-for="DateNaissance" class="form-control" />
+                <input asp-for="DateNaissance" class="form-control" type="date" />
                 <span asp-validation-for="DateNaissance" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" class="form-control" type="email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="Telephone" class="control-label"></label>
                 <input asp-for="Telephone" class="form-control" />
                 <span asp-validation-for="Telephone" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <label asp-for="Adresse" class="control-label"></label>
                 <input asp-for="Adresse" class="form-control" />
                 <span asp-validation-for="Adresse" class="text-danger"></span>
             </div>
+            
+            <!-- THIS IS THE MAIN CHANGE: Dropdown for Poste -->
             <div class="form-group">
-                <label asp-for="Poste" class="control-label"></label>
-                <input asp-for="Poste" class="form-control" />
-                <span asp-validation-for="Poste" class="text-danger"></span>
+                <label asp-for="PosteId" class="control-label">Poste</label>
+                <select asp-for="PosteId" class="form-control" id="posteSelect">
+                    <option value="">-- Select a Poste --</option>
+                    @if (ViewBag.Postes != null)
+                    {
+                        @foreach (var poste in ViewBag.Postes as List<ERP.Models.Poste>)
+                        {
+                            <option value="@poste.PosteId" data-min-salary="@poste.MinimumBaseSalary">
+                                @poste.Title (@poste.Department)
+                            </option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="PosteId" class="text-danger"></span>
+                <small class="form-text text-muted" id="salaryInfo"></small>
             </div>
+            
             <div class="form-group">
                 <label asp-for="DateEmbauche" class="control-label"></label>
-                <input asp-for="DateEmbauche" class="form-control" />
+                <input asp-for="DateEmbauche" class="form-control" type="date" />
                 <span asp-validation-for="DateEmbauche" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -63,3 +85,21 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Show minimum salary when a poste is selected
+        document.getElementById('posteSelect').addEventListener('change', function() {
+            var selectedOption = this.options[this.selectedIndex];
+            var minSalary = selectedOption.getAttribute('data-min-salary');
+            
+            if (minSalary && minSalary !== '') {
+                document.getElementById('salaryInfo').textContent = 
+                    'Default Base Salary: ' + parseFloat(minSalary).toFixed(2) + ' TND';
+            } else {
+                document.getElementById('salaryInfo').textContent = '';
+            }
+        });
+    </script>
+}

@@ -47,10 +47,10 @@
             @Html.DisplayFor(model => model.Adresse)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Poste)
+            Poste
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Poste)
+            @Model.Poste.Title (@Model.Poste.Department)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DateEmbauche)
@@ -59,6 +59,46 @@
             @Html.DisplayFor(model => model.DateEmbauche)
         </dd>
     </dl>
+
+    <h4 class="mt-4">Compensation Packages</h4>
+    <hr />
+    @if (Model.CompensationPackages != null && Model.CompensationPackages.Any())
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Base Salary</th>
+                    <th>Effective From</th>
+                    <th>Effective To</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var package in Model.CompensationPackages.OrderByDescending(p => p.EffectiveFrom))
+                {
+                    <tr>
+                        <td>@package.BaseSalary.ToString("C")</td>
+                        <td>@package.EffectiveFrom.ToShortDateString()</td>
+                        <td>@(package.EffectiveTo?.ToShortDateString() ?? "Ongoing")</td>
+                        <td>
+                            @if (package.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">No compensation packages found.</p>
+    }
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

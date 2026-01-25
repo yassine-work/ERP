@@ -1,0 +1,16 @@
+@model ERP.Models.Poste
+@{
+    ViewBag.Title = "Delete Post";
+}
+
+<h2>Delete Post</h2>
+
+<div class="alert alert-danger">
+    Are you sure you want to delete the post <strong>@Model.Title</strong> in department <strong>@Model.Department</strong>?
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="PosteId" />
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

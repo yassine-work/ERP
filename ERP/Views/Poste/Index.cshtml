@@ -1,0 +1,33 @@
+@model IEnumerable<ERP.Models.Poste>
+@{
+    ViewBag.Title = "Posts";
+}
+
+<h2>Posts</h2>
+<a class="btn btn-primary mb-3" asp-action="Create">Create New Post</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Department</th>
+            <th>Minimum Salary</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var poste in Model)
+        {
+            <tr>
+                <td>@poste.Title</td>
+                <td>@poste.Department</td>
+                <td>@poste.MinimumBaseSalary.ToString("C")</td>
+                <td>
+                    <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@poste.PosteId">Details</a>
+                    <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@poste.PosteId">Edit</a>
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@poste.PosteId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

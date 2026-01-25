@@ -1,0 +1,34 @@
+@model IEnumerable<ERP.Models.AllowanceType>
+
+@{
+    ViewData["Title"] = "Allowance Types";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Allowance Types</h2>
+        <a asp-action="Create" class="btn btn-primary">+ New Allowance Type</a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th style="width:180px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.AllowanceTypeName</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.AllowanceTypeId" class="btn btn-sm btn-info">View</a>
+                    <a asp-action="Edit" asp-route-id="@item.AllowanceTypeId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.AllowanceTypeId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

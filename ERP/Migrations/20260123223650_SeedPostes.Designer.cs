@@ -4,6 +4,7 @@ using ERP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260123223650_SeedPostes")]
+    partial class SeedPostes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,14 +36,6 @@ namespace ERP.Migrations
                     b.Property<string>("AdvantageTypeName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EligibilityRule")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Provider")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("AdvantageTypeId");
 
@@ -169,11 +164,19 @@ namespace ERP.Migrations
                     b.Property<int>("CompensationPackageId")
                         .HasColumnType("int");
 
+                    b.Property<string>("EligibilityRule")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Provider")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -208,12 +211,6 @@ namespace ERP.Migrations
                     b.Property<int>("CompensationPackageId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EffectiveFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EffectiveTo")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Frequency")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -245,9 +242,6 @@ namespace ERP.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("AwardedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("BonusRule")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -269,9 +263,6 @@ namespace ERP.Migrations
 
                     b.Property<bool>("IsTaxable")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ValidUntil")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("EmployeeBonusId");
 
