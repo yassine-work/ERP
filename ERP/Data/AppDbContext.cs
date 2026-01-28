@@ -91,6 +91,11 @@ namespace ERP.Data
                 .OnDelete(DeleteBehavior.Restrict); 
             
             DataSeeder.SeedPostes(modelBuilder);
+            DataSeeder.SeedAllowanceTypes(modelBuilder);
+            DataSeeder.SeedBonusTypes(modelBuilder);
+            DataSeeder.SeedAdvantageTypes(modelBuilder);
+
+
 
 
         }

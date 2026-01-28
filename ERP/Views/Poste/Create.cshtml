@@ -6,6 +6,7 @@
 <h2>Create Post</h2>
 
 <form asp-action="Create" method="post" class="needs-validation" novalidate>
+    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
     <div class="mb-3">
         <label asp-for="Title" class="form-label">Title</label>
         <input asp-for="Title" class="form-control" required />
@@ -22,5 +23,12 @@
         <span asp-validation-for="MinimumBaseSalary" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-success">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    @if (!string.IsNullOrEmpty(ViewBag.ReturnUrl as string))
+    {
+        <a href="@ViewBag.ReturnUrl" class="btn btn-secondary">Cancel</a>
+    }
+    else
+    {
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    }
 </form>

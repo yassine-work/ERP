@@ -1,0 +1,418 @@
+@using ERP.Models
+@{
+    ViewData["Title"] = "Modifier Package de Rémunération";
+
+    var employee = ViewBag.Employee as Employe;
+    var activePackage = ViewBag.ActivePackage as CompensationPackage;
+
+    var allowanceTypes = ViewBag.AllowanceTypes as List<AllowanceType> ?? new();
+    var bonusTypes = ViewBag.BonusTypes as List<BonusType> ?? new();
+    var advantageTypes = ViewBag.AdvantageTypes as List<AdvantageType> ?? new();
+
+    var allowances = activePackage?.Allowances ?? new List<EmployeeAllowance>();
+    var bonuses = activePackage?.Bonuses ?? new List<EmployeeBonus>();
+    var advantages = activePackage?.Advantages ?? new List<EmployeeAdvantage>();
+}
+
+<div class="container mt-4">
+<form asp-controller="CompensationPackage" asp-action="Save" method="post">
+
+<input type="hidden" name="EmployeeId" value="@employee.Id" />
+
+<!-- ================= BASE ================= -->
+<div class="card mb-4">
+<div class="card-header"><h5>Salaire de base</h5></div>
+<div class="card-body row">
+<div class="col-md-6">
+<label>Base</label>
+<input type="number" name="BaseSalary" class="form-control" step="0.01"
+       value="@(activePackage?.BaseSalary ?? employee.Poste.MinimumBaseSalary)" required />
+<small class="text-muted">Salaire mensuel brut de référence pour le poste.</small>
+</div>
+<div class="col-md-6">
+<label>Date d'effet</label>
+<input type="date" name="EffectiveFrom" class="form-control"
+       value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+<small class="text-muted">Date à partir de laquelle ce package s'applique.</small>
+</div>
+</div>
+</div>
+
+<!-- ================= ALLOWANCES ================= -->
+<div class="card mb-4">
+<div class="card-header d-flex justify-content-between">
+<h5>Indemnités</h5>
+<button type="button" class="btn btn-sm btn-primary" id="addAllowanceBtn">Ajouter</button>
+</div>
+
+<div class="card-body">
+<div id="allowancesContainer">
+
+@{
+    var aIndex = 0;
+}
+
+@foreach (var a in allowances)
+{
+<div class="card mb-3 item-card allowance-card">
+<div class="card-body">
+
+<div class="d-flex justify-content-end mb-2">
+<button type="button" class="btn btn-outline-danger btn-sm remove-allowance">Supprimer</button>
+</div>
+
+<div class="row">
+<div class="col-md-3">
+<label>Type</label>
+<select name="Allowances[@aIndex].AllowanceTypeId" class="form-select" required onchange="handleTypeChange(this, 'AllowanceType')">
+<option value="">-- Sélectionner --</option>
+@foreach (var t in allowanceTypes)
+{
+    if (t.AllowanceTypeId == a.AllowanceTypeId)
+    { <option value="@t.AllowanceTypeId" selected>@t.AllowanceTypeName</option> }
+    else
+    { <option value="@t.AllowanceTypeId">@t.AllowanceTypeName</option> }
+}
+<option value="OTHER">-- Autre --</option>
+</select>
+<small class="text-muted">Choisissez la catégorie d'indemnité.</small>
+</div>
+
+<div class="col-md-2">
+<label>Montant</label>
+<input type="number" name="Allowances[@aIndex].Amount" class="form-control" step="0.01" value="@a.Amount" />
+<small class="text-muted">Montant versé par occurrence.</small>
+</div>
+
+<div class="col-md-2">
+<label>Fréquence</label>
+<select name="Allowances[@aIndex].Frequency" class="form-select">
+@if (a.Frequency == "Monthly") { <option value="Monthly" selected>Mensuel</option> } else { <option value="Monthly">Mensuel</option> }
+@if (a.Frequency == "Quarterly") { <option value="Quarterly" selected>Trimestriel</option> } else { <option value="Quarterly">Trimestriel</option> }
+@if (a.Frequency == "Yearly") { <option value="Yearly" selected>Annuel</option> } else { <option value="Yearly">Annuel</option> }
+@if (a.Frequency == "OneTime") { <option value="OneTime" selected>Ponctuel</option> } else { <option value="OneTime">Ponctuel</option> }
+</select>
+<small class="text-muted">Rythme d'application de l'indemnité.</small>
+</div>
+
+<div class="col-md-2">
+<label>Début</label>
+<input type="date" name="Allowances[@aIndex].EffectiveFrom" class="form-control"
+       value="@a.EffectiveFrom.ToString("yyyy-MM-dd")" />
+<small class="text-muted">Date de démarrage de l'indemnité.</small>
+</div>
+
+<div class="col-md-2">
+<label>Fin</label>
+<input type="date" name="Allowances[@aIndex].EffectiveTo" class="form-control"
+       value="@(a.EffectiveTo?.ToString("yyyy-MM-dd") ?? "")" />
+<small class="text-muted">Laissez vide si sans fin prévue.</small>
+</div>
+
+<div class="col-md-1 d-flex align-items-center">
+<input type="hidden" name="Allowances[@aIndex].IsRecurring" value="false" />
+@if (a.IsRecurring) { <input type="checkbox" name="Allowances[@aIndex].IsRecurring" checked /> }
+else { <input type="checkbox" name="Allowances[@aIndex].IsRecurring" /> }
+<label class="ms-1">Réc.</label>
+</div>
+
+<div class="col-md-1 d-flex align-items-center">
+<input type="hidden" name="Allowances[@aIndex].IsTaxable" value="false" />
+@if (a.IsTaxable) { <input type="checkbox" name="Allowances[@aIndex].IsTaxable" checked /> }
+else { <input type="checkbox" name="Allowances[@aIndex].IsTaxable" /> }
+<label class="ms-1">Imp.</label>
+</div>
+
+</div>
+
+</div>
+</div>
+aIndex++;
+}
+
+</div>
+</div>
+</div>
+
+<!-- ================= BONUSES ================= -->
+<div class="card mb-4">
+<div class="card-header d-flex justify-content-between">
+<h5>Primes</h5>
+<button type="button" class="btn btn-sm btn-primary" id="addBonusBtn">Ajouter</button>
+</div>
+
+<div class="card-body">
+<div id="bonusesContainer">
+
+@{
+    var bIndex = 0;
+}
+
+@foreach (var b in bonuses)
+{
+<div class="card mb-3 item-card bonus-card">
+<div class="card-body">
+
+<div class="d-flex justify-content-end mb-2">
+<button type="button" class="btn btn-outline-danger btn-sm remove-bonus">Supprimer</button>
+</div>
+
+<div class="row">
+<div class="col-md-3">
+<select name="Bonuses[@bIndex].BonusTypeId" class="form-select" onchange="handleTypeChange(this, 'BonusType')">
+<option value="">-- Sélectionner --</option>
+@foreach (var t in bonusTypes)
+{
+    if (t.BonusTypeId == b.BonusTypeId)
+    { <option value="@t.BonusTypeId" selected>@t.BonusTypeName</option> }
+    else
+    { <option value="@t.BonusTypeId">@t.BonusTypeName</option> }
+}
+<option value="OTHER">-- Autre --</option>
+</select>
+<small class="text-muted">Type de prime à attribuer.</small>
+<div class="form-check mt-2">
+<input type="hidden" name="Bonuses[@bIndex].IsPerformanceBased" value="false" />
+@if (b.IsPerformanceBased){<input class="form-check-input" type="checkbox" name="Bonuses[@bIndex].IsPerformanceBased" checked/>}
+else{<input class="form-check-input" type="checkbox" name="Bonuses[@bIndex].IsPerformanceBased"/>}
+<label class="form-check-label">Basée sur performance</label>
+</div>
+</div>
+
+<div class="col-md-2">
+<input type="number" name="Bonuses[@bIndex].Amount" class="form-control" step="0.01" value="@b.Amount"/>
+<small class="text-muted">Montant de la prime.</small>
+</div>
+
+<div class="col-md-2">
+<input type="date" name="Bonuses[@bIndex].AwardedOn" class="form-control"
+       value="@b.AwardedOn.ToString("yyyy-MM-dd")"/>
+<small class="text-muted">Date de versement prévue.</small>
+</div>
+
+<div class="col-md-2">
+<input type="date" name="Bonuses[@bIndex].ValidUntil" class="form-control"
+    value="@(b.ValidUntil?.ToString("yyyy-MM-dd") ?? "")"/>
+<small class="text-muted">Fin de validité (optionnel).</small>
+</div>
+
+<div class="col-md-3 d-flex align-items-center gap-3">
+<input type="hidden" name="Bonuses[@bIndex].IsAutomatic" value="false" />
+<label>@if (b.IsAutomatic){<input type="checkbox" name="Bonuses[@bIndex].IsAutomatic" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsAutomatic"/>} Automatique</label>
+<input type="hidden" name="Bonuses[@bIndex].IsTaxable" value="false" />
+<label>@if (b.IsTaxable){<input type="checkbox" name="Bonuses[@bIndex].IsTaxable" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsTaxable"/>} Imposable</label>
+<input type="hidden" name="Bonuses[@bIndex].IsExceptional" value="false" />
+<label>@if (b.IsExceptional){<input type="checkbox" name="Bonuses[@bIndex].IsExceptional" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsExceptional"/>} Exceptionnelle</label>
+</div>
+</div>
+
+</div>
+</div>
+bIndex++;
+}
+
+</div>
+</div>
+</div>
+
+<!-- ================= ADVANTAGES ================= -->
+<div class="card mb-4">
+<div class="card-header d-flex justify-content-between">
+<h5>Avantages</h5>
+<button type="button" class="btn btn-sm btn-primary" id="addAdvBtn">Ajouter</button>
+</div>
+
+<div class="card-body">
+<div id="advantagesContainer">
+
+@{
+    var vIndex = 0;
+}
+
+@foreach (var v in advantages)
+{
+<div class="card mb-3 item-card advantage-card">
+<div class="card-body">
+
+<div class="d-flex justify-content-end mb-2">
+<button type="button" class="btn btn-outline-danger btn-sm remove-advantage">Supprimer</button>
+</div>
+
+<div class="row">
+<div class="col-md-3">
+<select name="Advantages[@vIndex].AdvantageTypeId" class="form-select" onchange="handleTypeChange(this, 'AdvantageType')">
+<option value="">-- Sélectionner --</option>
+@foreach (var t in advantageTypes)
+{
+    if (t.AdvantageTypeId == v.AdvantageTypeId)
+    { <option value="@t.AdvantageTypeId" selected>@t.AdvantageTypeName</option> }
+    else
+    { <option value="@t.AdvantageTypeId">@t.AdvantageTypeName</option> }
+}
+<option value="OTHER">-- Autre --</option>
+</select>
+<small class="text-muted">Choisissez l'avantage accordé.</small>
+</div>
+
+<div class="col-md-2">
+<input type="number" name="Advantages[@vIndex].Value" class="form-control" step="0.01" value="@v.Value"/>
+<small class="text-muted">Valeur monétaire de l'avantage.</small>
+</div>
+
+<div class="col-md-2">
+<input type="date" name="Advantages[@vIndex].StartDate" class="form-control"
+       value="@v.StartDate.ToString("yyyy-MM-dd")"/>
+<small class="text-muted">Date de début de l'avantage.</small>
+</div>
+
+<div class="col-md-2">
+<input type="date" name="Advantages[@vIndex].EndDate" class="form-control"
+       value="@(v.EndDate?.ToString("yyyy-MM-dd") ?? "")"/>
+<small class="text-muted">Optionnel : fin prévue.</small>
+</div>
+
+<div class="col-md-2 d-flex align-items-center">
+<input type="hidden" name="Advantages[@vIndex].IsActive" value="false" />
+@if (v.IsActive){<input type="checkbox" name="Advantages[@vIndex].IsActive" checked/>}
+else{<input type="checkbox" name="Advantages[@vIndex].IsActive"/>}
+<label class="ms-1">Actif</label>
+</div>
+
+</div>
+
+</div>
+</div>
+vIndex++;
+}
+
+</div>
+</div>
+</div>
+
+<!-- ================= SAVE ================= -->
+<div class="d-flex justify-content-between">
+<a asp-controller="Paie" asp-action="EmployeeView" asp-route-employeeId="@employee.Id"
+   class="btn btn-secondary">Annuler</a>
+<button type="submit" class="btn btn-success">Enregistrer</button>
+</div>
+
+</form>
+</div>
+
+@section Scripts{
+<script>
+let aIndex=@allowances.Count;
+let bIndex=@bonuses.Count;
+let vIndex=@advantages.Count;
+let employeeId = @employee.Id;
+let returnUrl = '@Url.Action("EditPackage", "Paie", new { employeeId = "EMPLOYEE_ID" })'.replace('EMPLOYEE_ID', employeeId);
+
+function renumber(containerSelector, prefix){
+  const cards = document.querySelectorAll(containerSelector + ' .item-card');
+  cards.forEach((card, idx)=>{
+    card.querySelectorAll('[name]').forEach(el=>{
+      el.name = el.name.replace(new RegExp(`${prefix}\\[\\d+\\]`), `${prefix}[${idx}]`);
+    });
+  });
+  if(prefix==='Allowances'){ aIndex = cards.length; }
+  if(prefix==='Bonuses'){ bIndex = cards.length; }
+  if(prefix==='Advantages'){ vIndex = cards.length; }
+}
+
+function handleTypeChange(selectElement, typeController) {
+  if (selectElement.value === 'OTHER') {
+    let createUrl = '';
+    if (typeController === 'AllowanceType') {
+      createUrl = '/AllowanceType/Create?returnUrl=' + encodeURIComponent(returnUrl);
+    } else if (typeController === 'BonusType') {
+      createUrl = '/BonusType/Create?returnUrl=' + encodeURIComponent(returnUrl);
+    } else if (typeController === 'AdvantageType') {
+      createUrl = '/AdvantageType/Create?returnUrl=' + encodeURIComponent(returnUrl);
+    }
+    window.location.href = createUrl;
+    selectElement.value = '';
+  }
+}
+
+document.getElementById("addAllowanceBtn").onclick=function(){
+document.getElementById("allowancesContainer").insertAdjacentHTML("beforeend",`
+<div class="card mb-3 item-card allowance-card"><div class="card-body"><div class="d-flex justify-content-end mb-2"><button type="button" class="btn btn-outline-danger btn-sm remove-allowance">Supprimer</button></div><div class="row">
+<div class="col-md-3"><select name="Allowances[${aIndex}].AllowanceTypeId" class="form-select" onchange="handleTypeChange(this, 'AllowanceType')">
+<option value="">-- Sélectionner --</option>
+@foreach (var t in allowanceTypes){<text><option value="@t.AllowanceTypeId">@t.AllowanceTypeName</option></text>}
+<option value="OTHER">-- Autre --</option>
+</select><small class="text-muted">Choisissez la catégorie d'indemnité.</small></div>
+<div class="col-md-2"><input type="number" name="Allowances[${aIndex}].Amount" class="form-control" step="0.01"/><small class="text-muted">Montant par occurrence.</small></div>
+<div class="col-md-2"><select name="Allowances[${aIndex}].Frequency" class="form-select">
+<option value="Monthly">Mensuel</option><option value="Quarterly">Trimestriel</option>
+<option value="Yearly">Annuel</option><option value="OneTime">Ponctuel</option></select><small class="text-muted">Rythme d'application.</small></div>
+<div class="col-md-2"><input type="date" name="Allowances[${aIndex}].EffectiveFrom" class="form-control"/><small class="text-muted">Début de l'indemnité.</small></div>
+<div class="col-md-2"><input type="date" name="Allowances[${aIndex}].EffectiveTo" class="form-control"/><small class="text-muted">Fin (optionnel).</small></div>
+<div class="col-md-1"><input type="hidden" name="Allowances[${aIndex}].IsRecurring" value="false"/><input type="checkbox" name="Allowances[${aIndex}].IsRecurring"/><small class="text-muted">Récurrent</small></div>
+<div class="col-md-1"><input type="hidden" name="Allowances[${aIndex}].IsTaxable" value="false"/><input type="checkbox" name="Allowances[${aIndex}].IsTaxable"/><small class="text-muted">Imposable</small></div>
+</div></div></div>`);
+aIndex++;
+ renumber('#allowancesContainer','Allowances');
+};
+
+document.getElementById("addBonusBtn").onclick=function(){
+document.getElementById("bonusesContainer").insertAdjacentHTML("beforeend",`
+<div class="card mb-3 item-card bonus-card"><div class="card-body"><div class="d-flex justify-content-end mb-2"><button type="button" class="btn btn-outline-danger btn-sm remove-bonus">Supprimer</button></div><div class="row">
+<div class="col-md-3"><select name="Bonuses[${bIndex}].BonusTypeId" class="form-select" onchange="handleTypeChange(this, 'BonusType')">
+<option value="">-- Sélectionner --</option>
+@foreach (var t in bonusTypes){<text><option value="@t.BonusTypeId">@t.BonusTypeName</option></text>}
+<option value="OTHER">-- Autre --</option>
+</select><small class="text-muted">Type de prime.</small>
+<div class="form-check mt-2"><input type="hidden" name="Bonuses[${bIndex}].IsPerformanceBased" value="false"/><input class="form-check-input" type="checkbox" name="Bonuses[${bIndex}].IsPerformanceBased"/> <label class="form-check-label">Basée sur performance</label></div></div>
+<div class="col-md-2"><input type="number" name="Bonuses[${bIndex}].Amount" class="form-control" step="0.01"/><small class="text-muted">Montant prévu.</small></div>
+<div class="col-md-2"><input type="date" name="Bonuses[${bIndex}].AwardedOn" class="form-control"/><small class="text-muted">Date de versement.</small></div>
+<div class="col-md-2"><input type="date" name="Bonuses[${bIndex}].ValidUntil" class="form-control"/><small class="text-muted">Fin de validité.</small></div>
+<div class="col-md-3 d-flex gap-3">
+<input type="hidden" name="Bonuses[${bIndex}].IsAutomatic" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsAutomatic"/> Automatique</label>
+<input type="hidden" name="Bonuses[${bIndex}].IsTaxable" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsTaxable"/> Imposable</label>
+<input type="hidden" name="Bonuses[${bIndex}].IsExceptional" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsExceptional"/> Exceptionnelle</label>
+</div>
+</div></div></div>`);
+bIndex++;
+ renumber('#bonusesContainer','Bonuses');
+};
+
+document.getElementById("addAdvBtn").onclick=function(){
+document.getElementById("advantagesContainer").insertAdjacentHTML("beforeend",`
+<div class="card mb-3 item-card advantage-card"><div class="card-body"><div class="d-flex justify-content-end mb-2"><button type="button" class="btn btn-outline-danger btn-sm remove-advantage">Supprimer</button></div><div class="row">
+<div class="col-md-3"><select name="Advantages[${vIndex}].AdvantageTypeId" class="form-select" onchange="handleTypeChange(this, 'AdvantageType')">
+<option value="">-- Sélectionner --</option>
+@foreach (var t in advantageTypes){<text><option value="@t.AdvantageTypeId">@t.AdvantageTypeName</option></text>}
+<option value="OTHER">-- Autre --</option>
+</select><small class="text-muted">Type d'avantage.</small></div>
+<div class="col-md-2"><input type="number" name="Advantages[${vIndex}].Value" class="form-control" step="0.01"/><small class="text-muted">Valeur attribuée.</small></div>
+<div class="col-md-2"><input type="date" name="Advantages[${vIndex}].StartDate" class="form-control"/><small class="text-muted">Date de début.</small></div>
+<div class="col-md-2"><input type="date" name="Advantages[${vIndex}].EndDate" class="form-control"/><small class="text-muted">Fin optionnelle.</small></div>
+<div class="col-md-2"><input type="hidden" name="Advantages[${vIndex}].IsActive" value="false"/><input type="checkbox" name="Advantages[${vIndex}].IsActive"/> Actif</div>
+</div></div></div>`);
+vIndex++;
+ renumber('#advantagesContainer','Advantages');
+};
+
+document.getElementById('allowancesContainer').addEventListener('click',function(e){
+  if(e.target.closest('.remove-allowance')){
+    e.target.closest('.item-card').remove();
+    renumber('#allowancesContainer','Allowances');
+  }
+});
+
+document.getElementById('bonusesContainer').addEventListener('click',function(e){
+  if(e.target.closest('.remove-bonus')){
+    e.target.closest('.item-card').remove();
+    renumber('#bonusesContainer','Bonuses');
+  }
+});
+
+document.getElementById('advantagesContainer').addEventListener('click',function(e){
+  if(e.target.closest('.remove-advantage')){
+    e.target.closest('.item-card').remove();
+    renumber('#advantagesContainer','Advantages');
+  }
+});
+</script>
+}

@@ -58,6 +58,13 @@ namespace ERP.Controllers
                 .ThenBy(p => p.Title)
                 .ToListAsync();
             
+            // If a new poste was just created, pre-select it
+            if (TempData["NewPosteId"] != null)
+            {
+                ViewBag.SelectedPosteId = (int)TempData["NewPosteId"];
+                TempData["SuccessMessage"] = "Poste created successfully! You can now create the employee.";
+            }
+            
             return View();
         }
 

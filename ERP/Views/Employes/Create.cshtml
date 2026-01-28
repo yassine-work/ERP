@@ -6,6 +6,14 @@
 
 <h1>Create</h1>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <h4>Employe</h4>
 <hr />
 <div class="row">
@@ -52,18 +60,34 @@
             <!-- THIS IS THE MAIN CHANGE: Dropdown for Poste -->
             <div class="form-group">
                 <label asp-for="PosteId" class="control-label">Poste</label>
-                <select asp-for="PosteId" class="form-control" id="posteSelect">
-                    <option value="">-- Select a Poste --</option>
-                    @if (ViewBag.Postes != null)
-                    {
-                        @foreach (var poste in ViewBag.Postes as List<ERP.Models.Poste>)
+                <div class="d-flex gap-2">
+                    <select asp-for="PosteId" class="form-control" id="posteSelect">
+                        <option value="">-- Select a Poste --</option>
+                        @if (ViewBag.Postes != null)
                         {
-                            <option value="@poste.PosteId" data-min-salary="@poste.MinimumBaseSalary">
-                                @poste.Title (@poste.Department)
-                            </option>
+                            @foreach (var poste in ViewBag.Postes as List<ERP.Models.Poste>)
+                            {
+                                @if (ViewBag.SelectedPosteId != null && ViewBag.SelectedPosteId == poste.PosteId)
+                                {
+                                    <option value="@poste.PosteId" data-min-salary="@poste.MinimumBaseSalary" selected>
+                                        @poste.Title (@poste.Department)
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@poste.PosteId" data-min-salary="@poste.MinimumBaseSalary">
+                                        @poste.Title (@poste.Department)
+                                    </option>
+                                }
+
+                            }
                         }
-                    }
-                </select>
+                    </select>
+                    <a asp-controller="Poste" asp-action="Create" asp-route-returnUrl="@Url.Action("Create", "Employes")" 
+                       class="btn btn-outline-primary" title="Create New Poste">
+                        <i class="bi bi-plus-circle"></i> New
+                    </a>
+                </div>
                 <span asp-validation-for="PosteId" class="text-danger"></span>
                 <small class="form-text text-muted" id="salaryInfo"></small>
             </div>

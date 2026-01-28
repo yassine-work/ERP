@@ -43,15 +43,16 @@ namespace ERP.Controllers
         }
 
         // GET: Poste/Create
-        public IActionResult Create()
+        public IActionResult Create(string returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         // POST: Poste/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Department,MinimumBaseSalary,Description")] Poste poste)
+        public async Task<IActionResult> Create([Bind("Title,Department,MinimumBaseSalary,Description")] Poste poste, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -62,14 +63,24 @@ namespace ERP.Controllers
                 if (exists)
                 {
                     ModelState.AddModelError("", "A poste with this title already exists in this department.");
+                    ViewBag.ReturnUrl = returnUrl;
                     return View(poste);
                 }
 
                 _context.Add(poste);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Poste created successfully!";
+                TempData["NewPosteId"] = poste.PosteId;
+                
+                // If returnUrl is provided, redirect back to it
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.ReturnUrl = returnUrl;
             return View(poste);
         }
 

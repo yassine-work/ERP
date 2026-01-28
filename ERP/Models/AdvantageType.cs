@@ -10,10 +10,15 @@ namespace ERP.Models
         [Required(ErrorMessage = "Le nom de l'avantage est obligatoire")]
         public string AdvantageTypeName { get; set; } // "Insurance", "Transport", "Phone"
 
+        [MaxLength(500)]
+        public string? Description { get; set; } // optional description
+
         [MaxLength(100)]
         public string? Provider { get; set; } // optional, e.g., insurance company
 
         [MaxLength(500)]
         public string? EligibilityRule { get; set; } // optional, conditions or notes
+
+        public bool IsTaxable { get; set; } = false; // whether this advantage is taxable
     }
 }

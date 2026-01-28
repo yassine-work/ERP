@@ -1,0 +1,266 @@
+@{
+    ViewData["Title"] = "Package de Rémunération";
+    var employee = ViewBag.Employee as ERP.Models.Employe;
+    var activePackage = ViewBag.ActivePackage as ERP.Models.CompensationPackage;
+}
+
+<div class="container mt-4">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- TOP SECTION: EMPLOYEE IDENTITY -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="mb-1">@employee.Nom @employee.Prenom</h3>
+                    <p class="mb-0">
+                        @employee.Poste.Title · @employee.Poste.Department
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge bg-success fs-6">ACTIF</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p class="mb-1"><strong>Email:</strong></p>
+                    <p>@employee.Email</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1"><strong>Téléphone:</strong></p>
+                    <p>@employee.Telephone</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1"><strong>ID Employé:</strong></p>
+                    <p>#@employee.Id</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ACTION BUTTONS -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <div class="d-flex gap-3 mb-4">
+        <a asp-controller="CompensationPackage" 
+           asp-action="History" 
+           asp-route-employeeId="@employee.Id" 
+           class="btn btn-outline-info btn-lg">
+            <i class="bi bi-clock-history"></i> Historique
+        </a>
+        
+        <a asp-controller="CompensationPackage" 
+           asp-action="Edit" 
+           asp-route-employeeId="@employee.Id" 
+           class="btn btn-warning btn-lg">
+            <i class="bi bi-pencil"></i> Modifier Package
+        </a>
+
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg ms-auto">
+            <i class="bi bi-search"></i> Nouvelle recherche
+        </a>
+    </div>
+
+    @if (activePackage == null)
+    {
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- NO ACTIVE PACKAGE -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div class="alert alert-warning">
+            <h5><i class="bi bi-exclamation-triangle"></i> Aucun package actif</h5>
+            <p class="mb-0">Cet employé n'a pas encore de package de rémunération.</p>
+        </div>
+    }
+    else
+    {
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <!-- ACTIVE PACKAGE - READ ONLY DISPLAY -->
+        <!-- ════════════════════════════════════════════════════════════ -->
+        <div class="card shadow-lg">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-check-circle"></i> Package Actif
+                </h4>
+                <small>Effectif depuis le @activePackage.EffectiveFrom.ToShortDateString()</small>
+            </div>
+            <div class="card-body p-4">
+
+                <!-- Base Salary -->
+                <div class="mb-4 pb-4 border-bottom">
+                    <h5 class="text-muted mb-2">Salaire de Base</h5>
+                    <h2 class="text-primary mb-0">@activePackage.BaseSalary.ToString("C")</h2>
+                    <small class="text-muted">
+                        Minimum pour @employee.Poste.Title: @employee.Poste.MinimumBaseSalary.ToString("C")
+                    </small>
+                </div>
+
+                <!-- Allowances -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-cash-stack text-success"></i> Indemnités
+                    </h5>
+                    @if (activePackage.Allowances != null && activePackage.Allowances.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless">
+                                <tbody>
+                                    @foreach (var allowance in activePackage.Allowances)
+                                    {
+                                        <tr>
+                                            <td class="w-50">
+                                                <strong>@allowance.AllowanceType.AllowanceTypeName</strong>
+                                                @if (!string.IsNullOrEmpty(allowance.Frequency))
+                                                {
+                                                    <small class="text-muted">(@allowance.Frequency)</small>
+                                                }
+                                            </td>
+                                            <td class="text-end">
+                                                <strong>@allowance.Amount.ToString("C")</strong>
+                                            </td>
+                                            <td class="text-end">
+                                                @if (allowance.IsTaxable)
+                                                {
+                                                    <span class="badge bg-warning text-dark">Imposable</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="border-top">
+                                    <tr>
+                                        <td><strong>Total Indemnités</strong></td>
+                                        <td class="text-end" colspan="2">
+                                            <strong class="text-success">
+                                                @activePackage.Allowances.Sum(a => a.Amount).ToString("C")
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Aucune indemnité</p>
+                    }
+                </div>
+
+                <!-- Bonuses -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-gift text-warning"></i> Primes
+                    </h5>
+                    @if (activePackage.Bonuses != null && activePackage.Bonuses.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless">
+                                <tbody>
+                                    @foreach (var bonus in activePackage.Bonuses)
+                                    {
+                                        <tr>
+                                            <td class="w-50">
+                                                <strong>@bonus.BonusType.BonusTypeName</strong>
+                                                @if (bonus.IsPerformanceBased)
+                                                {
+                                                    <span class="badge bg-info">Performance</span>
+                                                }
+                                            </td>
+                                            <td class="text-end">
+                                                <strong>@bonus.Amount.ToString("C")</strong>
+                                            </td>
+                                            <td class="text-end text-muted">
+                                                <small>@bonus.AwardedOn.ToShortDateString()</small>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="border-top">
+                                    <tr>
+                                        <td><strong>Total Primes</strong></td>
+                                        <td class="text-end" colspan="2">
+                                            <strong class="text-success">
+                                                @activePackage.Bonuses.Sum(b => b.Amount).ToString("C")
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Aucune prime</p>
+                    }
+                </div>
+
+                <!-- Advantages -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-heart text-danger"></i> Avantages
+                    </h5>
+                    @if (activePackage.Advantages != null && activePackage.Advantages.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless">
+                                <tbody>
+                                    @foreach (var advantage in activePackage.Advantages)
+                                    {
+                                        <tr>
+                                            <td class="w-50">
+                                                <strong>@advantage.AdvantageType.AdvantageTypeName</strong>
+                                            </td>
+                                            <td class="text-end">
+                                                <strong>@advantage.Value.ToString("C")</strong>
+                                            </td>
+                                            <td class="text-end">
+                                                @if (advantage.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Actif</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Inactif</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Aucun avantage</p>
+                    }
+                </div>
+
+                <!-- Total Compensation -->
+                <div class="alert alert-primary mt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">Rémunération Totale</h5>
+                            <small class="text-muted">Base + Indemnités + Primes</small>
+                        </div>
+                        <div class="text-end">
+                            <h2 class="mb-0 text-success">
+                                @((activePackage.BaseSalary + 
+                                   (activePackage.Allowances?.Sum(a => a.Amount) ?? 0) + 
+                                   (activePackage.Bonuses?.Sum(b => b.Amount) ?? 0)).ToString("C"))
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

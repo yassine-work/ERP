@@ -1,20 +1,54 @@
 @model ERP.Models.BonusType
 
 @{
-    ViewData["Title"] = "Create Bonus Type";
+    ViewData["Title"] = "Créer Type de Prime";
+    var returnUrl = ViewBag.ReturnUrl as string ?? "";
 }
 
 <div class="container mt-4">
-    <h2>Create Bonus Type</h2>
+    <h2>Créer Type de Prime</h2>
 
     <form asp-action="Create" method="post" class="mt-3">
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+        
         <div class="mb-3">
-            <label asp-for="BonusTypeName" class="form-label"></label>
-            <input asp-for="BonusTypeName" class="form-control" />
+            <label asp-for="BonusTypeName" class="form-label">Nom de la prime <span class="text-danger">*</span></label>
+            <input asp-for="BonusTypeName" class="form-control" placeholder="ex: Prime de performance, Treizième mois..." required />
             <span asp-validation-for="BonusTypeName" class="text-danger"></span>
         </div>
 
-        <button type="submit" class="btn btn-success">Create</button>
-        <a asp-action="Index" class="btn btn-secondary">Back</a>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Description détaillée de cette prime"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="BonusRule" class="form-label">Règle ou Formule de Calcul</label>
+            <textarea asp-for="BonusRule" class="form-control" rows="3" placeholder="Conditions ou formule pour calculer la prime"></textarea>
+            <span asp-validation-for="BonusRule" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input asp-for="IsTaxable" class="form-check-input" />
+            <label asp-for="IsTaxable" class="form-check-label">Cette prime est imposable</label>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input asp-for="IsAutomatic" class="form-check-input" />
+            <label asp-for="IsAutomatic" class="form-check-label">Cette prime est appliquée automatiquement</label>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Créer</button>
+            @if (!string.IsNullOrEmpty(returnUrl))
+            {
+                <a href="@returnUrl" class="btn btn-secondary">Annuler</a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            }
+        </div>
     </form>
 </div>
