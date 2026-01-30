@@ -6,6 +6,22 @@
 
 <h1>Index</h1>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -31,7 +47,7 @@
                 @Html.DisplayNameFor(model => model.Adresse)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Poste)
+                Poste
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DateEmbauche)
@@ -61,7 +77,7 @@
                 @Html.DisplayFor(modelItem => item.Adresse)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Poste)
+                @item.Poste.Title (@item.Poste.Department)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DateEmbauche)

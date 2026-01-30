@@ -1,0 +1,284 @@
+@model ERP.Models.Employe
+@{
+    ViewData["Title"] = "Edit Package";
+    var employee = ViewBag.Employee as ERP.Models.Employe;
+    var activePackage = ViewBag.ActivePackage as ERP.Models.CompensationPackage;
+    var allowanceTypes = ViewBag.AllowanceTypes as List<ERP.Models.AllowanceType>;
+    var bonusTypes = ViewBag.BonusTypes as List<ERP.Models.BonusType>;
+    var advantageTypes = ViewBag.AdvantageTypes as List<ERP.Models.AdvantageType>;
+}
+
+<div class="container mt-4">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Employee Info -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div>
+                <h4>@employee.Nom @employee.Prenom</h4>
+                <small>@employee.Poste.Title (@employee.Poste.Department)</small>
+            </div>
+            <a asp-action="Index" class="btn btn-light btn-sm">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+
+    <form asp-action="SavePackage" method="post">
+        <input type="hidden" name="employeeId" value="@employee.Id" />
+
+        <!-- Base Salary -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                Salaire de Base
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="baseSalary" class="form-label">Base Salary</label>
+                    <input type="number" step="0.01" name="baseSalary" class="form-control" value="@(activePackage?.BaseSalary ?? employee.Poste.MinimumBaseSalary)" required />
+                    <small class="text-muted">Minimum for this poste: @employee.Poste.MinimumBaseSalary.ToString("C")</small>
+                </div>
+                <div class="mb-3">
+                    <label for="effectiveFrom" class="form-label">Effective From</label>
+                    <input type="date" name="effectiveFrom" class="form-control" value="@(activePackage?.EffectiveFrom.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" required />
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs for Allowances / Bonuses / Advantages -->
+        <ul class="nav nav-tabs" id="packageTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="allowances-tab" data-bs-toggle="tab" data-bs-target="#allowances" type="button" role="tab">Allowances</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="bonuses-tab" data-bs-toggle="tab" data-bs-target="#bonuses" type="button" role="tab">Bonuses</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="advantages-tab" data-bs-toggle="tab" data-bs-target="#advantages" type="button" role="tab">Advantages</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3">
+            <!-- Allowances Tab -->
+            <div class="tab-pane fade show active" id="allowances" role="tabpanel">
+                <table class="table table-bordered" id="allowanceTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Recurring</th>
+                            <th>Taxable</th>
+                            <th>Frequency</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (activePackage?.Allowances != null)
+                        {
+                            int i = 0;
+                            foreach (var a in activePackage.Allowances)
+                            {
+                                <tr>
+                                    <td>
+                                        <select name="allowances[@i].AllowanceTypeId" class="form-select">
+                                            @foreach(var type in allowanceTypes)
+                                            {
+                                                <option value="@type.AllowanceTypeId" selected="@(type.AllowanceTypeId == a.AllowanceTypeId ? "selected" : null)">
+                                                    @type.AllowanceTypeName
+                                                </option>
+                                            }
+                                            <option value="0">Other</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" step="0.01" name="allowances[@i].Amount" class="form-control" value="@a.Amount" /></td>
+                                    <td><input type="checkbox" name="allowances[@i].IsRecurring" @(a.IsRecurring ? "checked" : "") /></td>
+                                    <td><input type="checkbox" name="allowances[@i].IsTaxable" @(a.IsTaxable ? "checked" : "") /></td>
+                                    <td><input type="text" name="allowances[@i].Frequency" class="form-control" value="@a.Frequency" /></td>
+                                    <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+                <button type="button" id="addAllowance" class="btn btn-sm btn-primary mt-2">+ Add Allowance</button>
+            </div>
+
+            <!-- Bonuses Tab -->
+            <div class="tab-pane fade" id="bonuses" role="tabpanel">
+                <table class="table table-bordered" id="bonusTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Automatic</th>
+                            <th>Performance</th>
+                            <th>Taxable</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (activePackage?.Bonuses != null)
+                        {
+                            int i = 0;
+                            foreach (var b in activePackage.Bonuses)
+                            {
+                                <tr>
+                                    <td>
+                                        <select name="bonuses[@i].BonusTypeId" class="form-select">
+                                            @foreach(var type in bonusTypes)
+                                            {
+                                                <option value="@type.BonusTypeId" selected="@(type.BonusTypeId == b.BonusTypeId ? "selected" : null)">
+                                                    @type.BonusTypeName
+                                                </option>
+                                            }
+                                            <option value="0">Other</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" step="0.01" name="bonuses[@i].Amount" class="form-control" value="@b.Amount" /></td>
+                                    <td><input type="checkbox" name="bonuses[@i].IsAutomatic" @(b.IsAutomatic ? "checked" : "") /></td>
+                                    <td><input type="checkbox" name="bonuses[@i].IsPerformanceBased" @(b.IsPerformanceBased ? "checked" : "") /></td>
+                                    <td><input type="checkbox" name="bonuses[@i].IsTaxable" @(b.IsTaxable ? "checked" : "") /></td>
+                                    <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+                <button type="button" id="addBonus" class="btn btn-sm btn-primary mt-2">+ Add Bonus</button>
+            </div>
+
+            <!-- Advantages Tab -->
+            <div class="tab-pane fade" id="advantages" role="tabpanel">
+                <table class="table table-bordered" id="advantageTable">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th>Provider</th>
+                            <th>Start Date</th>
+                            <th>Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (activePackage?.Advantages != null)
+                        {
+                            int i = 0;
+                            foreach (var adv in activePackage.Advantages)
+                            {
+                                <tr>
+                                    <td>
+                                        <select name="advantages[@i].AdvantageTypeId" class="form-select">
+                                            @foreach(var type in advantageTypes)
+                                            {
+                                                <option value="@type.AdvantageTypeId" selected="@(type.AdvantageTypeId == adv.AdvantageTypeId ? "selected" : null)">
+                                                    @type.AdvantageTypeName
+                                                </option>
+                                            }
+                                            <option value="0">Other</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" step="0.01" name="advantages[@i].Value" class="form-control" value="@adv.Value" /></td>
+                                    <td><input type="date" name="advantages[@i].StartDate" class="form-control" value="@adv.StartDate.ToString("yyyy-MM-dd")" /></td>
+                                    <td><input type="checkbox" name="advantages[@i].IsActive" @(adv.IsActive ? "checked" : "") /></td>
+                                    <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                    </tbody>
+                </table>
+                <button type="button" id="addAdvantage" class="btn btn-sm btn-primary mt-2">+ Add Advantage</button>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-end gap-2">
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Package</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    let allowanceIndex = @activePackage?.Allowances?.Count() ?? 0;
+    let bonusIndex = @activePackage?.Bonuses?.Count() ?? 0;
+    let advantageIndex = @activePackage?.Advantages?.Count() ?? 0;
+
+    // Add new row
+    document.getElementById('addAllowance').addEventListener('click', () => {
+        let table = document.getElementById('allowanceTable').getElementsByTagName('tbody')[0];
+        table.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td>
+                    <select name="allowances[${allowanceIndex}].AllowanceTypeId" class="form-select">
+                        @foreach(var type in allowanceTypes){<option value="@type.AllowanceTypeId">@type.AllowanceTypeName</option>}
+                        <option value="0">Other</option>
+                    </select>
+                </td>
+                <td><input type="number" step="0.01" name="allowances[${allowanceIndex}].Amount" class="form-control" /></td>
+                <td><input type="checkbox" name="allowances[${allowanceIndex}].IsRecurring" /></td>
+                <td><input type="checkbox" name="allowances[${allowanceIndex}].IsTaxable" checked /></td>
+                <td><input type="text" name="allowances[${allowanceIndex}].Frequency" class="form-control" /></td>
+                <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+            </tr>
+        `);
+        allowanceIndex++;
+    });
+
+    document.getElementById('addBonus').addEventListener('click', () => {
+        let table = document.getElementById('bonusTable').getElementsByTagName('tbody')[0];
+        table.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td>
+                    <select name="bonuses[${bonusIndex}].BonusTypeId" class="form-select">
+                        @foreach(var type in bonusTypes){<option value="@type.BonusTypeId">@type.BonusTypeName</option>}
+                        <option value="0">Other</option>
+                    </select>
+                </td>
+                <td><input type="number" step="0.01" name="bonuses[${bonusIndex}].Amount" class="form-control" /></td>
+                <td><input type="checkbox" name="bonuses[${bonusIndex}].IsAutomatic" /></td>
+                <td><input type="checkbox" name="bonuses[${bonusIndex}].IsPerformanceBased" /></td>
+                <td><input type="checkbox" name="bonuses[${bonusIndex}].IsTaxable" checked /></td>
+                <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+            </tr>
+        `);
+        bonusIndex++;
+    });
+
+    document.getElementById('addAdvantage').addEventListener('click', () => {
+        let table = document.getElementById('advantageTable').getElementsByTagName('tbody')[0];
+        table.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td>
+                    <select name="advantages[${advantageIndex}].AdvantageTypeId" class="form-select">
+                        @foreach(var type in advantageTypes){<option value="@type.AdvantageTypeId">@type.AdvantageTypeName</option>}
+                        <option value="0">Other</option>
+                    </select>
+                </td>
+                <td><input type="number" step="0.01" name="advantages[${advantageIndex}].Value" class="form-control" /></td>
+                <td><input type="text" name="advantages[${advantageIndex}].Provider" class="form-control" /></td>
+                <td><input type="date" name="advantages[${advantageIndex}].StartDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" /></td>
+                <td><input type="checkbox" name="advantages[${advantageIndex}].IsActive" checked /></td>
+                <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+            </tr>
+        `);
+        advantageIndex++;
+    });
+
+    // Remove row
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('remove-row')) {
+            e.target.closest('tr').remove();
+        }
+    });
+</script>
+}

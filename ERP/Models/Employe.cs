@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ERP.Models
 {
@@ -22,9 +23,18 @@ namespace ERP.Models
 
         public string Telephone { get; set; }
         public string Adresse { get; set; }
-        public string Poste { get; set; }
+        
+        [Required]
+        public int PosteId { get; set; } 
+        
+        [ForeignKey("PosteId")]
+        public Poste? Poste { get; set; } 
 
         [DataType(DataType.Date)]
         public DateTime DateEmbauche { get; set; }
+
+        public ICollection<CompensationPackage>? CompensationPackages { get; set; }
+
+        
     }
 }

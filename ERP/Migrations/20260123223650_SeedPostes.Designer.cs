@@ -4,6 +4,7 @@ using ERP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260123223650_SeedPostes")]
+    partial class SeedPostes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,53 +37,9 @@ namespace ERP.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("EligibilityRule")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsTaxable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Provider")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.HasKey("AdvantageTypeId");
 
                     b.ToTable("AdvantageTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            AdvantageTypeId = 1,
-                            AdvantageTypeName = "Health Insurance",
-                            Description = "Assurance santé complémentaire pour l'employé et sa famille",
-                            EligibilityRule = "Full-time employees only",
-                            IsTaxable = false,
-                            Provider = "Global Health"
-                        },
-                        new
-                        {
-                            AdvantageTypeId = 2,
-                            AdvantageTypeName = "Gym Membership",
-                            Description = "Accès à une salle de sport pour la santé et le bien-être",
-                            EligibilityRule = "Available after 3 months of employment",
-                            IsTaxable = false,
-                            Provider = "FitClub"
-                        },
-                        new
-                        {
-                            AdvantageTypeId = 3,
-                            AdvantageTypeName = "Company Car",
-                            Description = "Mise à disposition d'un véhicule de fonction",
-                            EligibilityRule = "Managers only",
-                            IsTaxable = true,
-                            Provider = "Leasing Co."
-                        });
                 });
 
             modelBuilder.Entity("ERP.Models.AllowanceType", b =>
@@ -95,62 +54,9 @@ namespace ERP.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("EligibilityRule")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsTaxable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Provider")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.HasKey("AllowanceTypeId");
 
                     b.ToTable("AllowanceTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            AllowanceTypeId = 1,
-                            AllowanceTypeName = "Transport",
-                            Description = "Allocation pour les frais de transport domicile-travail",
-                            EligibilityRule = "Tous les employés",
-                            IsTaxable = false,
-                            Provider = "RATP / Transports publics"
-                        },
-                        new
-                        {
-                            AllowanceTypeId = 2,
-                            AllowanceTypeName = "Meal",
-                            Description = "Allocation pour les repas et restauration",
-                            EligibilityRule = "Tous les employés en CDI",
-                            IsTaxable = false,
-                            Provider = "Restaurant d'entreprise"
-                        },
-                        new
-                        {
-                            AllowanceTypeId = 3,
-                            AllowanceTypeName = "Housing",
-                            Description = "Allocation pour les frais de logement",
-                            EligibilityRule = "Sur demande et justification de domicile",
-                            IsTaxable = true,
-                            Provider = "Auto-géré"
-                        },
-                        new
-                        {
-                            AllowanceTypeId = 4,
-                            AllowanceTypeName = "Phone",
-                            Description = "Allocation pour usage professionnel du téléphone",
-                            EligibilityRule = "Employés en contact client ou télétravail",
-                            IsTaxable = false,
-                            Provider = "Forfait opérateur"
-                        });
                 });
 
             modelBuilder.Entity("ERP.Models.BonusType", b =>
@@ -161,56 +67,13 @@ namespace ERP.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BonusTypeId"));
 
-                    b.Property<string>("BonusRule")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<string>("BonusTypeName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsAutomatic")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsTaxable")
-                        .HasColumnType("bit");
-
                     b.HasKey("BonusTypeId");
 
                     b.ToTable("BonusTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            BonusTypeId = 1,
-                            BonusRule = "Basée sur les KPIs individuels, entre 0-20% du salaire mensuel",
-                            BonusTypeName = "Performance",
-                            Description = "Prime basée sur la performance et les objectifs atteints",
-                            IsAutomatic = false,
-                            IsTaxable = true
-                        },
-                        new
-                        {
-                            BonusTypeId = 2,
-                            BonusRule = "500-2000€ selon le poste recruté et la durée de permanence",
-                            BonusTypeName = "Referral",
-                            Description = "Prime pour recommandation et recrutement de candidats",
-                            IsAutomatic = false,
-                            IsTaxable = true
-                        },
-                        new
-                        {
-                            BonusTypeId = 3,
-                            BonusRule = "1 mois de salaire minimum, variable selon ancienneté",
-                            BonusTypeName = "Year-end",
-                            Description = "Prime de fin d'année versée en décembre",
-                            IsAutomatic = true,
-                            IsTaxable = true
-                        });
                 });
 
             modelBuilder.Entity("ERP.Models.CompensationPackage", b =>
@@ -301,11 +164,19 @@ namespace ERP.Migrations
                     b.Property<int>("CompensationPackageId")
                         .HasColumnType("int");
 
+                    b.Property<string>("EligibilityRule")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Provider")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -340,12 +211,6 @@ namespace ERP.Migrations
                     b.Property<int>("CompensationPackageId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EffectiveFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EffectiveTo")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Frequency")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -377,9 +242,6 @@ namespace ERP.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("AwardedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("BonusRule")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -401,9 +263,6 @@ namespace ERP.Migrations
 
                     b.Property<bool>("IsTaxable")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ValidUntil")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("EmployeeBonusId");
 

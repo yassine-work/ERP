@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using ERP.Services;
+using ERP.Services.IServiceContracts;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ERP.Data.AppDbContext>(options =>
@@ -6,6 +8,9 @@ builder.Services.AddDbContext<ERP.Data.AppDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<ICompensationPackageService, CompensationPackageService>();
+
 
 var app = builder.Build();
 

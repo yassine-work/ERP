@@ -1,0 +1,55 @@
+@model ERP.Models.AdvantageType
+
+@{
+    ViewData["Title"] = "Créer Type d'Avantage";
+    var returnUrl = ViewBag.ReturnUrl as string ?? "";
+}
+
+<div class="container mt-4">
+    <h2>Créer Type d'Avantage</h2>
+
+    <form asp-action="Create" method="post" class="mt-3">
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+        
+        <div class="mb-3">
+            <label asp-for="AdvantageTypeName" class="form-label">Nom de l'avantage <span class="text-danger">*</span></label>
+            <input asp-for="AdvantageTypeName" class="form-control" placeholder="ex: Assurance, Transport, Téléphone..." required />
+            <span asp-validation-for="AdvantageTypeName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Description détaillée de cet avantage"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Provider" class="form-label">Fournisseur</label>
+            <input asp-for="Provider" class="form-control" placeholder="ex: Compagnie d'assurance, Opérateur de transport..." />
+            <span asp-validation-for="Provider" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="EligibilityRule" class="form-label">Conditions d'éligibilité</label>
+            <textarea asp-for="EligibilityRule" class="form-control" rows="3" placeholder="Conditions ou notes spéciales pour cet avantage"></textarea>
+            <span asp-validation-for="EligibilityRule" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input asp-for="IsTaxable" class="form-check-input" />
+            <label asp-for="IsTaxable" class="form-check-label">Cet avantage est imposable</label>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Créer</button>
+            @if (!string.IsNullOrEmpty(returnUrl))
+            {
+                <a href="@returnUrl" class="btn btn-secondary">Annuler</a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            }
+        </div>
+    </form>
+</div>

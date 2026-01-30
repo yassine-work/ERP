@@ -1,0 +1,177 @@
+@{
+    ViewData["Title"] = "Modifier Package";
+    var employee = ViewBag.Employee as ERP.Models.Employe;
+    var activePackage = ViewBag.ActivePackage as ERP.Models.CompensationPackage;
+    var allowanceTypes = ViewBag.AllowanceTypes as List<ERP.Models.AllowanceType>;
+    var bonusTypes = ViewBag.BonusTypes as List<ERP.Models.BonusType>;
+    var advantageTypes = ViewBag.AdvantageTypes as List<ERP.Models.AdvantageType>;
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0">@employee.Nom @employee.Prenom</h4>
+                <small>@employee.Poste.Title (@employee.Poste.Department)</small>
+            </div>
+            <div>
+                <a asp-action="History" asp-route-employeeId="@employee.Id" class="btn btn-info me-2">
+                    <i class="bi bi-clock-history"></i> Historique
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <form asp-action="SavePackage" method="post">
+                <input type="hidden" name="employeeId" value="@employee.Id" />
+
+                <!-- Base Salary -->
+                <div class="mb-3">
+                    <label class="form-label">Salaire de Base</label>
+                    <input type="number" name="baseSalary" class="form-control" step="0.01"
+                           min="@employee.Poste.MinimumBaseSalary"
+                           value="@(activePackage?.BaseSalary ?? employee.Poste.MinimumBaseSalary)"
+                           required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Date d'Effet</label>
+                    <input type="date" name="effectiveFrom" class="form-control"
+                           value="@(activePackage?.EffectiveFrom.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))"
+                           required />
+                </div>
+
+                <!-- Allowances -->
+                <div class="mb-3">
+                    <h5>Indemnités</h5>
+                    <div id="allowancesContainer">
+                        @if (activePackage?.Allowances != null)
+                        {
+                            int i = 0;
+                            foreach (var allowance in activePackage.Allowances)
+                            {
+                                <div class="card p-2 mb-2 allowance-item">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Indemnité #@(i + 1)</h6>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.allowance-item').remove()">Supprimer</button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <select name="allowances[@i].AllowanceTypeId" class="form-select" asp-items="null" required>
+                                                @foreach (var t in allowanceTypes)
+                                                {
+                                                    <option value="@t.AllowanceTypeId" selected="@(t.AllowanceTypeId == allowance.AllowanceTypeId ? "selected" : null)">
+                                                        @t.AllowanceTypeName
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="number" name="allowances[@i].Amount" class="form-control" step="0.01" min="0"
+                                                   value="@allowance.Amount" required />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="allowances[@i].IsRecurring" class="form-check-input"
+                                                       @(allowance.IsRecurring ? "checked" : "") />
+                                                <label class="form-check-label">Récurrent</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" name="allowances[@i].IsTaxable" class="form-check-input"
+                                                       @(allowance.IsTaxable ? "checked" : "") />
+                                                <label class="form-check-label">Imposable</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                i++;
+                            }
+                        }
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary mt-2" onclick="addAllowance()">+ Ajouter Indemnité</button>
+                </div>
+
+                <!-- Bonuses -->
+                <div class="mb-3">
+                    <h5>Primes</h5>
+                    <div id="bonusesContainer">
+                        @if (activePackage?.Bonuses != null)
+                        {
+                            int i = 0;
+                            foreach (var bonus in activePackage.Bonuses)
+                            {
+                                <div class="card p-2 mb-2 bonus-item">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Prime #@(i + 1)</h6>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.bonus-item').remove()">Supprimer</button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <select name="bonuses[@i].BonusTypeId" class="form-select" asp-items="null" required>
+                                                @foreach (var t in bonusTypes)
+                                                {
+                                                    <option value="@t.BonusTypeId" selected="@(t.BonusTypeId == bonus.BonusTypeId ? "selected" : null)">
+                                                        @t.BonusTypeName
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="number" name="bonuses[@i].Amount" class="form-control" step="0.01" min="0"
+                                                   value="@bonus.Amount" required />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="date" name="bonuses[@i].AwardedOn" class="form-control"
+                                                   value="@bonus.AwardedOn.ToString("yyyy-MM-dd")" />
+                                        </div>
+                                    </div>
+                                </div>
+                                i++;
+                            }
+                        }
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary mt-2" onclick="addBonus()">+ Ajouter Prime</button>
+                </div>
+
+                <!-- Advantages -->
+                <div class="mb-3">
+                    <h5>Avantages</h5>
+                    <div id="advantagesContainer">
+                        @if (activePackage?.Advantages != null)
+                        {
+                            int i = 0;
+                            foreach (var adv in activePackage.Advantages)
+                            {
+                                <div class="card p-2 mb-2 advantage-item">
+                                    <div class="d-flex justify-content-between">
+                                        <h6>Avantage #@(i + 1)</h6>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.advantage-item').remove()">Supprimer</button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <select name="advantages[@i].AdvantageTypeId" class="form-select" asp-items="null" required>
+                                                @foreach (var t in advantageTypes)
+                                                {
+                                                    <option value="@t.AdvantageTypeId" selected="@(t.AdvantageTypeId == adv.AdvantageTypeId ? "selected" : null)">
+                                                        @t.AdvantageTypeName
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="number" name="advantages[@i].Value" class="form-control" step="0.01" min="0"
+                                                   value="@adv.Value" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                i++;
+                            }
+                        }
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary mt-2" onclick="addAdvantage()">+ Ajouter Avantage</button>
+                </div>
+
+                <button type="submit" class="btn btn-success">Enregistrer Package</button>
+            </form>
+        </div>
+    </div>
+</div>

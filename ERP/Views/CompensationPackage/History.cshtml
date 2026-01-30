@@ -1,0 +1,149 @@
+@model IEnumerable<ERP.Models.CompensationPackage>
+
+@{
+    ViewData["Title"] = "Historique des Packages";
+    var employee = ViewBag.Employee as ERP.Models.Employe;
+    var packageList = Model.ToList();
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-clock-history"></i> Historique des Rémunérations
+            </h4>
+            <p class="mb-0">@employee.Nom @employee.Prenom · @employee.Poste.Title</p>
+        </div>
+        <div class="card-body">
+            @if (!packageList.Any())
+            {
+                <div class="alert alert-info">
+                    <p class="mb-0">Aucun historique trouvé.</p>
+                </div>
+            }
+            else
+            {
+                <div class="timeline">
+                    @for (int i = 0; i < packageList.Count; i++)
+                    {
+                        var package = packageList[i];
+                        var versionNumber = packageList.Count - i;
+                        var isActive = package.IsActive;
+
+                        <div class="card mb-3 @(isActive ? "border-success" : "")">
+                            <div class="card-header @(isActive ? "bg-success text-white" : "bg-light")">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-0">
+                                            Version #@versionNumber
+                                            @if (isActive)
+                                            {
+                                                <span class="badge bg-light text-success">ACTIF</span>
+                                            }
+                                        </h5>
+                                        <small>
+                                            Du @package.EffectiveFrom.ToShortDateString()
+                                            @if (package.EffectiveTo.HasValue)
+                                            {
+                                                <text>au @package.EffectiveTo.Value.ToShortDateString()</text>
+                                            }
+                                            else
+                                            {
+                                                <text>à aujourd'hui</text>
+                                            }
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <h4 class="mb-0">@package.BaseSalary.ToString("C")</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Allowances -->
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted">Indemnités</h6>
+                                        @if (package.Allowances != null && package.Allowances.Any())
+                                        {
+                                            <ul class="list-unstyled">
+                                                @foreach (var allowance in package.Allowances)
+                                                {
+                                                    <li>
+                                                        @allowance.AllowanceType.AllowanceTypeName: 
+                                                        <strong>@allowance.Amount.ToString("C")</strong>
+                                                    </li>
+                                                }
+                                            </ul>
+                                            <p class="mb-0"><strong>Total: @package.Allowances.Sum(a => a.Amount).ToString("C")</strong></p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-muted">Aucune</p>
+                                        }
+                                    </div>
+
+                                    <!-- Bonuses -->
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted">Primes</h6>
+                                        @if (package.Bonuses != null && package.Bonuses.Any())
+                                        {
+                                            <ul class="list-unstyled">
+                                                @foreach (var bonus in package.Bonuses)
+                                                {
+                                                    <li>
+                                                        @bonus.BonusType.BonusTypeName: 
+                                                        <strong>@bonus.Amount.ToString("C")</strong>
+                                                    </li>
+                                                }
+                                            </ul>
+                                            <p class="mb-0"><strong>Total: @package.Bonuses.Sum(b => b.Amount).ToString("C")</strong></p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-muted">Aucune</p>
+                                        }
+                                    </div>
+
+                                    <!-- Advantages -->
+                                    <div class="col-md-4">
+                                        <h6 class="text-muted">Avantages</h6>
+                                        @if (package.Advantages != null && package.Advantages.Any())
+                                        {
+                                            <ul class="list-unstyled">
+                                                @foreach (var advantage in package.Advantages)
+                                                {
+                                                    <li>
+                                                        @advantage.AdvantageType.AdvantageTypeName: 
+                                                        <strong>@advantage.Value.ToString("C")</strong>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-muted">Aucun</p>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-secondary mt-3 mb-0">
+                                    <strong>Total Compensation: 
+                                        @((package.BaseSalary + 
+                                           (package.Allowances?.Sum(a => a.Amount) ?? 0) + 
+                                           (package.Bonuses?.Sum(b => b.Amount) ?? 0)).ToString("C"))
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="mt-4">
+                <a asp-controller="Paie" asp-action="EmployeeView" asp-route-employeeId="@employee.Id" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
