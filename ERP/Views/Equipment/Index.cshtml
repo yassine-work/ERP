@@ -1,0 +1,192 @@
+@model IEnumerable<ERP.Models.Equipment>
+
+@{
+    ViewData["Title"] = "Inventaire des Équipements";
+    var equipmentTypes = ViewBag.EquipmentTypes as List<ERP.Models.EquipmentType>;
+}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <span class="label">Gestion du Matériel</span>
+        <h1 class="mt-2">Inventaire des Équipements</h1>
+        <p class="mono">@Model.Count() équipement(s) répertorié(s)</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Create" class="btn btn-primary">+ Nouvel équipement</a>
+        <a asp-controller="EquipmentType" asp-action="Index" class="btn btn-secondary">Types</a>
+        <a asp-controller="EquipmentAssignment" asp-action="Index" class="btn btn-secondary">Historique</a>
+    </div>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<!-- Statistics Bar -->
+<div class="stats-ticker mb-4">
+    <div class="container d-flex justify-content-center gap-4 flex-wrap">
+        <span><strong>@Model.Count(e => e.Status == ERP.Models.EquipmentStatus.Available)</strong> DISPONIBLES</span>
+        <span>·</span>
+        <span><strong>@Model.Count(e => e.Status == ERP.Models.EquipmentStatus.Assigned)</strong> ATTRIBUÉS</span>
+        <span>·</span>
+        <span><strong>@Model.Count(e => e.Status == ERP.Models.EquipmentStatus.InMaintenance)</strong> MAINTENANCE</span>
+        <span>·</span>
+        <span><strong>@Model.Count(e => e.Status == ERP.Models.EquipmentStatus.Retired)</strong> RETIRÉS</span>
+        <span>·</span>
+        <span class="badge">@Model.Count(e => e.Status == ERP.Models.EquipmentStatus.Lost) PERDUS</span>
+    </div>
+</div>
+
+<!-- Filter Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <span class="label mb-0">Filtres de Recherche</span>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Recherche</label>
+                <input type="text" name="searchString" class="form-control" value="@ViewBag.SearchString" placeholder="Nom, N° série, code...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Type</label>
+                <select name="typeId" class="form-select">
+                    <option value="">— Tous les types —</option>
+                    @foreach (var type in equipmentTypes)
+                    {
+                        <option value="@type.EquipmentTypeId" selected="@(ViewBag.TypeId == type.EquipmentTypeId)">@type.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Statut</label>
+                <select name="status" class="form-select">
+                    <option value="">— Tous les statuts —</option>
+                    <option value="@ERP.Models.EquipmentStatus.Available" selected="@(ViewBag.Status == ERP.Models.EquipmentStatus.Available)">Disponible</option>
+                    <option value="@ERP.Models.EquipmentStatus.Assigned" selected="@(ViewBag.Status == ERP.Models.EquipmentStatus.Assigned)">Attribué</option>
+                    <option value="@ERP.Models.EquipmentStatus.InMaintenance" selected="@(ViewBag.Status == ERP.Models.EquipmentStatus.InMaintenance)">En maintenance</option>
+                    <option value="@ERP.Models.EquipmentStatus.Retired" selected="@(ViewBag.Status == ERP.Models.EquipmentStatus.Retired)">Retiré</option>
+                    <option value="@ERP.Models.EquipmentStatus.Lost" selected="@(ViewBag.Status == ERP.Models.EquipmentStatus.Lost)">Perdu</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary">Filtrer</button>
+                <a asp-action="Index" class="btn btn-secondary">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Equipment Table -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Équipement</th>
+                    <th>Type</th>
+                    <th>Marque / Modèle</th>
+                    <th>Statut</th>
+                    <th>Attribué à</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var currentAssignment = item.Assignments?.FirstOrDefault(a => a.ReturnDate == null);
+                    <tr>
+                        <td><span class="mono">@item.InventoryCode</span></td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.EquipmentId">
+                                <strong>@item.Name</strong>
+                            </a>
+                        </td>
+                        <td><span class="badge bg-info">@item.EquipmentType?.Name</span></td>
+                        <td>
+                            <span class="mono">@item.Brand</span>
+                            @if (!string.IsNullOrEmpty(item.Model))
+                            {
+                                <span class="label d-block mt-1">@item.Model</span>
+                            }
+                        </td>
+                        <td>
+                            @switch (item.Status)
+                            {
+                                case ERP.Models.EquipmentStatus.Available:
+                                    <span class="badge bg-success">DISPONIBLE</span>
+                                    break;
+                                case ERP.Models.EquipmentStatus.Assigned:
+                                    <span class="badge bg-primary">ATTRIBUÉ</span>
+                                    break;
+                                case ERP.Models.EquipmentStatus.InMaintenance:
+                                    <span class="badge bg-warning">MAINTENANCE</span>
+                                    break;
+                                case ERP.Models.EquipmentStatus.Retired:
+                                    <span class="badge bg-secondary">RETIRÉ</span>
+                                    break;
+                                case ERP.Models.EquipmentStatus.Lost:
+                                    <span class="badge bg-danger">PERDU</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @if (currentAssignment != null)
+                            {
+                                <a asp-controller="Employes" asp-action="Details" asp-route-id="@currentAssignment.EmployeeId">
+                                    @currentAssignment.Employee?.Prenom @currentAssignment.Employee?.Nom?.ToUpper()
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="mono" style="color: var(--neutral-400);">—</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Details" asp-route-id="@item.EquipmentId" class="btn btn-secondary" title="Détails">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.EquipmentId" class="btn btn-secondary" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                @if (item.Status == ERP.Models.EquipmentStatus.Available)
+                                {
+                                    <a asp-action="Assign" asp-route-id="@item.EquipmentId" class="btn btn-primary" title="Attribuer">
+                                        Attribuer
+                                    </a>
+                                }
+                                @if (item.Status == ERP.Models.EquipmentStatus.Assigned)
+                                {
+                                    <a asp-action="Return" asp-route-id="@item.EquipmentId" class="btn btn-danger" title="Retourner">
+                                        Retour
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card text-center py-5 mt-4">
+        <div class="card-body">
+            <div class="ornament">❦</div>
+            <h3 class="mt-3">Aucun Équipement Trouvé</h3>
+            <p class="lead">Aucun équipement ne correspond aux critères sélectionnés.</p>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Réinitialiser les filtres</a>
+        </div>
+    </div>
+}

@@ -39,6 +39,9 @@ namespace ERP.Controllers
             var employe = await _context.Employes
                 .Include(e => e.Poste)
                 .Include(e => e.CompensationPackages)
+                .Include(e => e.EquipmentAssignments)
+                    .ThenInclude(a => a.Equipment)
+                        .ThenInclude(eq => eq.EquipmentType)
                 .FirstOrDefaultAsync(m => m.Id == id);
             
             if (employe == null)
@@ -71,7 +74,7 @@ namespace ERP.Controllers
         // POST: Employes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nom,Prenom,DateNaissance,Email,Telephone,Adresse,PosteId,DateEmbauche")] Employe employe)
+        public async Task<IActionResult> Create([Bind("Id,Matricule,Nom,Prenom,Gender,DateNaissance,LieuNaissance,CIN,Nationalite,SituationFamiliale,NombreEnfants,Email,Telephone,TelephoneUrgence,ContactUrgence,Adresse,Ville,CodePostal,PosteId,DateEmbauche,DateFinContrat,TypeContrat,Status,PhotoUrl,Notes")] Employe employe)
         {
             if (ModelState.IsValid)
             {
@@ -151,7 +154,7 @@ namespace ERP.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nom,Prenom,DateNaissance,Email,Telephone,Adresse,PosteId,DateEmbauche")] Employe employe)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Matricule,Nom,Prenom,Gender,DateNaissance,LieuNaissance,CIN,Nationalite,SituationFamiliale,NombreEnfants,Email,Telephone,TelephoneUrgence,ContactUrgence,Adresse,Ville,CodePostal,PosteId,DateEmbauche,DateFinContrat,TypeContrat,Status,PhotoUrl,Notes")] Employe employe)
         {
             if (id != employe.Id)
             {
@@ -160,6 +163,7 @@ namespace ERP.Controllers
 
             ModelState.Remove("Poste");
             ModelState.Remove("CompensationPackages");
+            ModelState.Remove("EquipmentAssignments");
 
             if (ModelState.IsValid)
             {

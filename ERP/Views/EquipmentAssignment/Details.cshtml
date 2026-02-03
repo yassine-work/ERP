@@ -1,0 +1,155 @@
+@model ERP.Models.EquipmentAssignment
+
+@{
+    ViewData["Title"] = "Détails de l'attribution";
+}
+
+<h1>Détails de l'attribution</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Attribution #@Model.AssignmentId</h5>
+                @if (Model.ReturnDate == null)
+                {
+                    <span class="badge bg-primary fs-6">En cours</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary fs-6">Terminée</span>
+                }
+            </div>
+            <div class="card-body">
+                <h6 class="border-bottom pb-2">Équipement</h6>
+                <dl class="row">
+                    <dt class="col-sm-4">Nom</dt>
+                    <dd class="col-sm-8">
+                        <a asp-controller="Equipment" asp-action="Details" asp-route-id="@Model.EquipmentId">
+                            @Model.Equipment?.Name
+                        </a>
+                    </dd>
+                    
+                    <dt class="col-sm-4">Type</dt>
+                    <dd class="col-sm-8"><span class="badge bg-info">@Model.Equipment?.EquipmentType?.Name</span></dd>
+                    
+                    <dt class="col-sm-4">Code d'inventaire</dt>
+                    <dd class="col-sm-8"><code>@Model.Equipment?.InventoryCode</code></dd>
+                    
+                    <dt class="col-sm-4">Marque / Modèle</dt>
+                    <dd class="col-sm-8">@Model.Equipment?.Brand @Model.Equipment?.Model</dd>
+                </dl>
+
+                <h6 class="border-bottom pb-2 mt-4">Employé</h6>
+                <dl class="row">
+                    <dt class="col-sm-4">Nom</dt>
+                    <dd class="col-sm-8">
+                        <a asp-controller="Employes" asp-action="Details" asp-route-id="@Model.EmployeeId">
+                            @Model.Employee?.Prenom @Model.Employee?.Nom
+                        </a>
+                    </dd>
+                    
+                    <dt class="col-sm-4">Poste</dt>
+                    <dd class="col-sm-8">@Model.Employee?.Poste?.Title (@Model.Employee?.Poste?.Department)</dd>
+                </dl>
+
+                <h6 class="border-bottom pb-2 mt-4">Attribution</h6>
+                <dl class="row">
+                    <dt class="col-sm-4">Date d'attribution</dt>
+                    <dd class="col-sm-8">@Model.AssignmentDate.ToShortDateString()</dd>
+                    
+                    <dt class="col-sm-4">État à l'attribution</dt>
+                    <dd class="col-sm-8">
+                        @switch (Model.ConditionAtAssignment)
+                        {
+                            case ERP.Models.AssignmentCondition.New:
+                                <span class="badge bg-success">Neuf</span>
+                                break;
+                            case ERP.Models.AssignmentCondition.Good:
+                                <span class="badge bg-primary">Bon état</span>
+                                break;
+                            case ERP.Models.AssignmentCondition.Fair:
+                                <span class="badge bg-warning">État correct</span>
+                                break;
+                            case ERP.Models.AssignmentCondition.Poor:
+                                <span class="badge bg-danger">Mauvais état</span>
+                                break;
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-4">Attribué par</dt>
+                    <dd class="col-sm-8">@(Model.AssignedBy ?? "-")</dd>
+                    
+                    <dt class="col-sm-4">Notes d'attribution</dt>
+                    <dd class="col-sm-8">@(Model.AssignmentNotes ?? "-")</dd>
+                </dl>
+
+                @if (Model.ReturnDate.HasValue)
+                {
+                    <h6 class="border-bottom pb-2 mt-4">Retour</h6>
+                    <dl class="row">
+                        <dt class="col-sm-4">Date de retour</dt>
+                        <dd class="col-sm-8">@Model.ReturnDate.Value.ToShortDateString()</dd>
+                        
+                        <dt class="col-sm-4">Durée d'utilisation</dt>
+                        <dd class="col-sm-8">
+                            @{
+                                var duration = Model.ReturnDate.Value - Model.AssignmentDate;
+                                if (duration.Days >= 365)
+                                {
+                                    @($"{duration.Days / 365} an(s) et {duration.Days % 365} jour(s)")
+                                }
+                                else if (duration.Days >= 30)
+                                {
+                                    @($"{duration.Days / 30} mois et {duration.Days % 30} jour(s)")
+                                }
+                                else
+                                {
+                                    @($"{duration.Days} jour(s)")
+                                }
+                            }
+                        </dd>
+                        
+                        <dt class="col-sm-4">État au retour</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.ConditionAtReturn.HasValue)
+                            {
+                                @switch (Model.ConditionAtReturn.Value)
+                                {
+                                    case ERP.Models.AssignmentCondition.New:
+                                        <span class="badge bg-success">Neuf</span>
+                                        break;
+                                    case ERP.Models.AssignmentCondition.Good:
+                                        <span class="badge bg-primary">Bon état</span>
+                                        break;
+                                    case ERP.Models.AssignmentCondition.Fair:
+                                        <span class="badge bg-warning">État correct</span>
+                                        break;
+                                    case ERP.Models.AssignmentCondition.Poor:
+                                        <span class="badge bg-danger">Mauvais état</span>
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Non renseigné</span>
+                            }
+                        </dd>
+                        
+                        <dt class="col-sm-4">Notes de retour</dt>
+                        <dd class="col-sm-8">@(Model.ReturnNotes ?? "-")</dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    @if (Model.ReturnDate == null)
+    {
+        <a asp-controller="Equipment" asp-action="Return" asp-route-id="@Model.EquipmentId" class="btn btn-warning">Enregistrer le retour</a>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
+    <a asp-action="EmployeeEquipment" asp-route-id="@Model.EmployeeId" class="btn btn-outline-primary">Voir tous les équipements de cet employé</a>
+</div>

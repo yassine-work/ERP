@@ -1,0 +1,149 @@
+@model IEnumerable<ERP.Models.JobOffer>
+@{
+    ViewData["Title"] = "Offres d'emploi";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 pb-3 border-bottom border-2 gap-3">
+    <div>
+        <h1>Offres d'emploi</h1>
+        <p class="text-muted mb-0">Gérez vos offres de recrutement</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
+        <a asp-action="CreateOffre" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nouvelle Offre
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Filtrer par statut</label>
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="">Tous les statuts</option>
+                    <option value="Draft" selected="@(Context.Request.Query["status"] == "Draft")">Brouillon</option>
+                    <option value="Published" selected="@(Context.Request.Query["status"] == "Published")">Publiée</option>
+                    <option value="Closed" selected="@(Context.Request.Query["status"] == "Closed")">Fermée</option>
+                    <option value="Cancelled" selected="@(Context.Request.Query["status"] == "Cancelled")">Annulée</option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th class="d-none d-md-table-cell">Département</th>
+                    <th class="d-none d-md-table-cell">Type</th>
+                    <th>Statut</th>
+                    <th class="d-none d-lg-table-cell">Date limite</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@item.Title</strong>
+                            @if (item.Poste != null)
+                            {
+                                <br><small class="text-muted">@item.Poste.Title</small>
+                            }
+                        </td>
+                        <td class="d-none d-md-table-cell">@item.Department</td>
+                        <td class="d-none d-md-table-cell">
+                            <span class="badge bg-secondary">@item.ContractType</span>
+                        </td>
+                        <td>
+                            @{
+                                var statusClass = item.Status switch
+                                {
+                                    ERP.Models.JobOfferStatus.Published => "bg-success",
+                                    ERP.Models.JobOfferStatus.Draft => "bg-warning text-dark",
+                                    ERP.Models.JobOfferStatus.Closed => "bg-secondary",
+                                    _ => "bg-danger"
+                                };
+                                var statusText = item.Status switch
+                                {
+                                    ERP.Models.JobOfferStatus.Draft => "Brouillon",
+                                    ERP.Models.JobOfferStatus.Published => "Publiée",
+                                    ERP.Models.JobOfferStatus.Closed => "Fermée",
+                                    ERP.Models.JobOfferStatus.Cancelled => "Annulée",
+                                    _ => ""
+                                };
+                            }
+                            <span class="badge @statusClass">@statusText</span>
+                        </td>
+                        <td class="d-none d-lg-table-cell">
+                            @(item.ClosingDate?.ToString("dd/MM/yyyy") ?? "—")
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="DetailsOffre" asp-route-id="@item.Id" class="btn btn-outline-secondary" title="Détails">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-action="EditOffre" asp-route-id="@item.Id" class="btn btn-outline-secondary" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                @if (item.Status == ERP.Models.JobOfferStatus.Draft)
+                                {
+                                    <form asp-action="PublishOffre" asp-route-id="@item.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-success" title="Publier">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </form>
+                                }
+                                @if (item.Status == ERP.Models.JobOfferStatus.Published)
+                                {
+                                    <form asp-action="CloseOffre" asp-route-id="@item.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-warning" title="Fermer">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
+                                }
+                                <form asp-action="DeleteOffre" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Supprimer cette offre ?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger" title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-briefcase display-1 text-muted"></i>
+        <h3 class="mt-3">Aucune offre d'emploi</h3>
+        <p class="text-muted">Commencez par créer votre première offre de recrutement.</p>
+        <a asp-action="CreateOffre" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Créer une offre
+        </a>
+    </div>
+}

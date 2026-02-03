@@ -1,0 +1,178 @@
+@model ERP.Models.Candidat
+@{
+    ViewData["Title"] = Model.NomComplet;
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 pb-3 border-bottom border-2 gap-3">
+    <div>
+        <h1>@Model.NomComplet</h1>
+        <p class="text-muted mb-0">@Model.Email</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Candidats" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour
+        </a>
+        <a asp-action="EditCandidat" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Modifier
+        </a>
+        <a asp-action="CreateCandidature" asp-route-candidatId="@Model.Id" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Nouvelle candidature
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">Informations personnelles</div>
+            <div class="card-body">
+                <dl>
+                    <dt>Email</dt>
+                    <dd><a href="mailto:@Model.Email">@Model.Email</a></dd>
+
+                    @if (!string.IsNullOrEmpty(Model.Telephone))
+                    {
+                        <dt>Téléphone</dt>
+                        <dd><a href="tel:@Model.Telephone">@Model.Telephone</a></dd>
+                    }
+
+                    @if (Model.DateNaissance.HasValue)
+                    {
+                        <dt>Date de naissance</dt>
+                        <dd>@Model.DateNaissance.Value.ToString("dd/MM/yyyy")</dd>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Adresse))
+                    {
+                        <dt>Adresse</dt>
+                        <dd>@Model.Adresse</dd>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Ville))
+                    {
+                        <dt>Ville</dt>
+                        <dd>@Model.Ville</dd>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.LinkedInUrl))
+                    {
+                        <dt>LinkedIn</dt>
+                        <dd><a href="@Model.LinkedInUrl" target="_blank">Voir le profil</a></dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">Profil professionnel</div>
+            <div class="card-body">
+                <dl>
+                    @if (!string.IsNullOrEmpty(Model.NiveauEtudes))
+                    {
+                        <dt>Niveau d'études</dt>
+                        <dd>@Model.NiveauEtudes</dd>
+                    }
+
+                    @if (Model.AnneeExperience.HasValue)
+                    {
+                        <dt>Expérience</dt>
+                        <dd>@Model.AnneeExperience ans</dd>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Competences))
+                    {
+                        <dt>Compétences</dt>
+                        <dd>@Model.Competences</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <div class="card mb-4">
+                <div class="card-header">Notes</div>
+                <div class="card-body">
+                    <p style="white-space: pre-line;">@Model.Notes</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Candidatures (@(Model.Candidatures?.Count ?? 0))</span>
+                <a asp-action="CreateCandidature" asp-route-candidatId="@Model.Id" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus"></i> Nouvelle
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Candidatures != null && Model.Candidatures.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Offre</th>
+                                    <th class="d-none d-md-table-cell">Date</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var candidature in Model.Candidatures.OrderByDescending(c => c.DateCandidature))
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@candidature.JobOffer?.Title</strong>
+                                            <span class="d-md-none"><br><small class="text-muted">@candidature.DateCandidature.ToString("dd/MM/yy")</small></span>
+                                        </td>
+                                        <td class="d-none d-md-table-cell">@candidature.DateCandidature.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @{
+                                                var candStatusClass = candidature.Status switch
+                                                {
+                                                    ERP.Models.CandidatureStatus.Accepted => "bg-success",
+                                                    ERP.Models.CandidatureStatus.Rejected => "bg-danger",
+                                                    ERP.Models.CandidatureStatus.Interview => "bg-info",
+                                                    _ => "bg-warning text-dark"
+                                                };
+                                                var candStatusText = candidature.Status switch
+                                                {
+                                                    ERP.Models.CandidatureStatus.Submitted => "Soumise",
+                                                    ERP.Models.CandidatureStatus.UnderReview => "En examen",
+                                                    ERP.Models.CandidatureStatus.Interview => "Entretien",
+                                                    ERP.Models.CandidatureStatus.Accepted => "Acceptée",
+                                                    ERP.Models.CandidatureStatus.Rejected => "Rejetée",
+                                                    ERP.Models.CandidatureStatus.Withdrawn => "Retirée",
+                                                    _ => ""
+                                                };
+                                            }
+                                            <span class="badge @candStatusClass">@candStatusText</span>
+                                        </td>
+                                        <td>
+                                            <a asp-action="EditCandidature" asp-route-id="@candidature.Id" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-inbox display-4"></i>
+                        <p class="mt-2">Ce candidat n'a pas encore postulé</p>
+                        <a asp-action="CreateCandidature" asp-route-candidatId="@Model.Id" class="btn btn-primary btn-sm">
+                            Créer une candidature
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

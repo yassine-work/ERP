@@ -1,0 +1,87 @@
+@model ERP.Models.EquipmentAssignment
+
+@{
+    ViewData["Title"] = "Retour de l'équipement";
+    var equipment = ViewBag.Equipment as ERP.Models.Equipment;
+}
+
+<h1>Retour de l'équipement</h1>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0">Équipement à retourner</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Nom</dt>
+            <dd class="col-sm-9">@equipment.Name</dd>
+            
+            <dt class="col-sm-3">Type</dt>
+            <dd class="col-sm-9"><span class="badge bg-info">@equipment.EquipmentType?.Name</span></dd>
+            
+            <dt class="col-sm-3">Code d'inventaire</dt>
+            <dd class="col-sm-9"><code>@equipment.InventoryCode</code></dd>
+            
+            <dt class="col-sm-3">Attribué à</dt>
+            <dd class="col-sm-9">
+                <strong>@Model.Employee?.Prenom @Model.Employee?.Nom</strong>
+            </dd>
+            
+            <dt class="col-sm-3">Depuis le</dt>
+            <dd class="col-sm-9">@Model.AssignmentDate.ToShortDateString()</dd>
+            
+            <dt class="col-sm-3">État à l'attribution</dt>
+            <dd class="col-sm-9">
+                @switch (Model.ConditionAtAssignment)
+                {
+                    case ERP.Models.AssignmentCondition.New:
+                        <span class="badge bg-success">Neuf</span>
+                        break;
+                    case ERP.Models.AssignmentCondition.Good:
+                        <span class="badge bg-primary">Bon état</span>
+                        break;
+                    case ERP.Models.AssignmentCondition.Fair:
+                        <span class="badge bg-warning">État correct</span>
+                        break;
+                    case ERP.Models.AssignmentCondition.Poor:
+                        <span class="badge bg-danger">Mauvais état</span>
+                        break;
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Return">
+            <input type="hidden" name="assignmentId" value="@Model.AssignmentId" />
+
+            <div class="form-group mb-3">
+                <label class="control-label">Date de retour</label>
+                <input name="returnDate" class="form-control" type="date" value="@Model.ReturnDate?.ToString("yyyy-MM-dd")" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">État au retour</label>
+                <select name="conditionAtReturn" class="form-select" required>
+                    <option value="@ERP.Models.AssignmentCondition.New">Neuf</option>
+                    <option value="@ERP.Models.AssignmentCondition.Good" selected>Bon état</option>
+                    <option value="@ERP.Models.AssignmentCondition.Fair">État correct</option>
+                    <option value="@ERP.Models.AssignmentCondition.Poor">Mauvais état (sera mis en maintenance)</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Notes de retour</label>
+                <textarea name="returnNotes" class="form-control" rows="3" placeholder="Notes ou commentaires sur l'état de l'équipement..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Enregistrer le retour" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>

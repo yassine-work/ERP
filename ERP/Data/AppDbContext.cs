@@ -24,7 +24,15 @@ namespace ERP.Data
 
         public DbSet<Poste> Postes { get; set; }
 
-       
+        // Equipment management
+        public DbSet<EquipmentType> EquipmentTypes { get; set; }
+        public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<EquipmentAssignment> EquipmentAssignments { get; set; }
+
+        // Recruitment management
+        public DbSet<JobOffer> JobOffers { get; set; }
+        public DbSet<Candidat> Candidats { get; set; }
+        public DbSet<Candidature> Candidatures { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -90,14 +98,55 @@ namespace ERP.Data
                 .HasForeignKey(e => e.PosteId)
                 .OnDelete(DeleteBehavior.Restrict); 
             
+            // Equipment relationships
+            modelBuilder.Entity<Equipment>()
+                .HasOne(e => e.EquipmentType)
+                .WithMany(t => t.Equipments)
+                .HasForeignKey(e => e.EquipmentTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<EquipmentAssignment>()
+                .HasOne(a => a.Equipment)
+                .WithMany(e => e.Assignments)
+                .HasForeignKey(a => a.EquipmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EquipmentAssignment>()
+                .HasOne(a => a.Employee)
+                .WithMany(e => e.EquipmentAssignments)
+                .HasForeignKey(a => a.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Recruitment relationships
+            modelBuilder.Entity<JobOffer>()
+                .HasOne(j => j.Poste)
+                .WithMany()
+                .HasForeignKey(j => j.PosteId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Candidature>()
+                .HasOne(c => c.Candidat)
+                .WithMany(c => c.Candidatures)
+                .HasForeignKey(c => c.CandidatId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Candidature>()
+                .HasOne(c => c.JobOffer)
+                .WithMany(j => j.Candidatures)
+                .HasForeignKey(c => c.JobOfferId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Prevent duplicate applications
+            modelBuilder.Entity<Candidature>()
+                .HasIndex(c => new { c.CandidatId, c.JobOfferId })
+                .IsUnique();
+
             DataSeeder.SeedPostes(modelBuilder);
             DataSeeder.SeedAllowanceTypes(modelBuilder);
             DataSeeder.SeedBonusTypes(modelBuilder);
             DataSeeder.SeedAdvantageTypes(modelBuilder);
-
-
-
-
+            DataSeeder.SeedEquipmentTypes(modelBuilder);
+            DataSeeder.SeedEquipments(modelBuilder);
         }
     }
 }

@@ -1,0 +1,114 @@
+@model ERP.Models.EquipmentType
+
+@{
+    ViewData["Title"] = "Détails du type d'équipement";
+}
+
+<h1>Détails du type d'équipement</h1>
+
+<div class="card">
+    <div class="card-header">
+        <h4>@Model.Name</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Catégorie</dt>
+            <dd class="col-sm-9">
+                @if (!string.IsNullOrEmpty(Model.Category))
+                {
+                    <span class="badge bg-info">@Model.Category</span>
+                }
+                else
+                {
+                    <span class="text-muted">Non définie</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@(Model.Description ?? "Aucune description")</dd>
+
+            <dt class="col-sm-3">Durée de vie estimée</dt>
+            <dd class="col-sm-9">
+                @if (Model.EstimatedLifespanMonths.HasValue)
+                {
+                    @($"{Model.EstimatedLifespanMonths} mois")
+                }
+                else
+                {
+                    <span class="text-muted">Non définie</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Nécessite maintenance</dt>
+            <dd class="col-sm-9">
+                @if (Model.RequiresMaintenance)
+                {
+                    <span class="badge bg-warning">Oui</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Non</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Nombre d'équipements</dt>
+            <dd class="col-sm-9">
+                <span class="badge bg-primary">@(Model.Equipments?.Count ?? 0)</span>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+@if (Model.Equipments != null && Model.Equipments.Any())
+{
+    <h4 class="mt-4">Équipements de ce type</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Code inventaire</th>
+                <th>Marque / Modèle</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var eq in Model.Equipments)
+            {
+                <tr>
+                    <td>
+                        <a asp-controller="Equipment" asp-action="Details" asp-route-id="@eq.EquipmentId">
+                            @eq.Name
+                        </a>
+                    </td>
+                    <td>@eq.InventoryCode</td>
+                    <td>@eq.Brand @eq.Model</td>
+                    <td>
+                        @switch (eq.Status)
+                        {
+                            case ERP.Models.EquipmentStatus.Available:
+                                <span class="badge bg-success">Disponible</span>
+                                break;
+                            case ERP.Models.EquipmentStatus.Assigned:
+                                <span class="badge bg-primary">Attribué</span>
+                                break;
+                            case ERP.Models.EquipmentStatus.InMaintenance:
+                                <span class="badge bg-warning">En maintenance</span>
+                                break;
+                            case ERP.Models.EquipmentStatus.Retired:
+                                <span class="badge bg-secondary">Retiré</span>
+                                break;
+                            case ERP.Models.EquipmentStatus.Lost:
+                                <span class="badge bg-danger">Perdu</span>
+                                break;
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.EquipmentTypeId" class="btn btn-warning">Modifier</a>
+    <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
+</div>
