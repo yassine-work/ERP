@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using NuGet.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ERP.Models
 {

@@ -1,106 +1,188 @@
 @model ERP.Models.Employe
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = $"{Model.Nom} {Model.Prenom}";
+    var statusClass = Model.Status switch
+    {
+        ERP.Models.EmployeeStatus.Active => "bg-success",
+        ERP.Models.EmployeeStatus.OnLeave => "bg-warning text-dark",
+        ERP.Models.EmployeeStatus.Suspended => "bg-danger",
+        ERP.Models.EmployeeStatus.Terminated => "bg-dark",
+        ERP.Models.EmployeeStatus.Resigned => "bg-secondary",
+        _ => "bg-secondary"
+    };
+    var statusText = Model.Status switch
+    {
+        ERP.Models.EmployeeStatus.Active => "Actif",
+        ERP.Models.EmployeeStatus.OnLeave => "En congé",
+        ERP.Models.EmployeeStatus.Suspended => "Suspendu",
+        ERP.Models.EmployeeStatus.Terminated => "Licencié",
+        ERP.Models.EmployeeStatus.Resigned => "Démissionnaire",
+        _ => "Inconnu"
+    };
+    var anciennete = (DateTime.Now - Model.DateEmbauche).Days / 365;
 }
 
-<h1>Details</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h2"><i class="bi bi-person-badge me-2"></i>@Model.Nom @Model.Prenom</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">Employés</a></li>
+                <li class="breadcrumb-item active">@Model.Matricule</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-group">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning"><i class="bi bi-pencil me-1"></i>Modifier</a>
+        <a asp-controller="Equipment" asp-action="Assign" asp-route-employeeId="@Model.Id" class="btn btn-info"><i class="bi bi-pc-display me-1"></i>Équipement</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>Supprimer</a>
+    </div>
+</div>
 
-<div>
-    <h4>Employe</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nom)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nom)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Prenom)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Prenom)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateNaissance)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateNaissance)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Telephone)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Telephone)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Adresse)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Adresse)
-        </dd>
-        <dt class = "col-sm-2">
-            Poste
-        </dt>
-        <dd class = "col-sm-10">
-            @Model.Poste.Title (@Model.Poste.Department)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateEmbauche)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateEmbauche)
-        </dd>
-    </dl>
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="avatar-large mx-auto mb-3">@Model.Prenom?.Substring(0, 1).ToUpper()@Model.Nom?.Substring(0, 1).ToUpper()</div>
+                <h4>@Model.Prenom @Model.Nom</h4>
+                <p class="text-muted mb-2">
+                    @if (Model.Poste != null)
+                    {
+                        <span>@Model.Poste.Title</span><br/><small>@Model.Poste.Department</small>
+                    }
+                </p>
+                <span class="badge @statusClass fs-6">@statusText</span>
+                <hr />
+                <div class="d-flex justify-content-around text-center">
+                    <div><strong class="d-block">@Model.Matricule</strong><small class="text-muted">Matricule</small></div>
+                    <div><strong class="d-block">@(Model.TypeContrat ?? "-")</strong><small class="text-muted">Contrat</small></div>
+                    <div><strong class="d-block">@anciennete ans</strong><small class="text-muted">Ancienneté</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <h4 class="mt-4">Compensation Packages</h4>
-    <hr />
-    @if (Model.CompensationPackages != null && Model.CompensationPackages.Any())
-    {
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Base Salary</th>
-                    <th>Effective From</th>
-                    <th>Effective To</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var package in Model.CompensationPackages.OrderByDescending(p => p.EffectiveFrom))
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white"><h5 class="mb-0"><i class="bi bi-person me-2"></i>Informations Personnelles</h5></div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row mb-0">
+                            <dt class="col-5">Sexe</dt><dd class="col-7">@(Model.Gender.HasValue ? (Model.Gender == ERP.Models.Gender.Male ? "Homme" : Model.Gender == ERP.Models.Gender.Female ? "Femme" : "Autre") : "-")</dd>
+                            <dt class="col-5">Naissance</dt><dd class="col-7">@Model.DateNaissance.ToString("dd/MM/yyyy")</dd>
+                            <dt class="col-5">Lieu</dt><dd class="col-7">@(Model.LieuNaissance ?? "-")</dd>
+                            <dt class="col-5">CIN</dt><dd class="col-7">@(Model.CIN ?? "-")</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl class="row mb-0">
+                            <dt class="col-5">Nationalité</dt><dd class="col-7">@(Model.Nationalite ?? "-")</dd>
+                            <dt class="col-5">Situation</dt><dd class="col-7">@(Model.SituationFamiliale ?? "-")</dd>
+                            <dt class="col-5">Enfants</dt><dd class="col-7">@(Model.NombreEnfants?.ToString() ?? "0")</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-info text-white"><h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Contact</h5></div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-4"><i class="bi bi-envelope me-1"></i>Email</dt><dd class="col-8"><a href="mailto:@Model.Email">@Model.Email</a></dd>
+                    <dt class="col-4"><i class="bi bi-telephone me-1"></i>Tél</dt><dd class="col-8">@Model.Telephone</dd>
+                    <dt class="col-4"><i class="bi bi-house me-1"></i>Adresse</dt><dd class="col-8">@Model.Adresse @(Model.Ville != null ? $", {Model.CodePostal} {Model.Ville}" : "")</dd>
+                </dl>
+                @if (!string.IsNullOrEmpty(Model.ContactUrgence))
                 {
-                    <tr>
-                        <td>@package.BaseSalary.ToString("C")</td>
-                        <td>@package.EffectiveFrom.ToShortDateString()</td>
-                        <td>@(package.EffectiveTo?.ToShortDateString() ?? "Ongoing")</td>
-                        <td>
-                            @if (package.IsActive)
-                            {
-                                <span class="badge bg-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Inactive</span>
-                            }
-                        </td>
+                    <hr /><h6 class="text-muted"><i class="bi bi-telephone-outbound me-1"></i>Urgence: @Model.ContactUrgence - @(Model.TelephoneUrgence ?? "-")</h6>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-success text-white"><h5 class="mb-0"><i class="bi bi-briefcase me-2"></i>Professionnel</h5></div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-5">Poste</dt><dd class="col-7"><strong>@Model.Poste?.Title</strong> <small class="text-muted">(@Model.Poste?.Department)</small></dd>
+                    <dt class="col-5">Contrat</dt><dd class="col-7">@(Model.TypeContrat ?? "-")</dd>
+                    <dt class="col-5">Embauche</dt><dd class="col-7">@Model.DateEmbauche.ToString("dd/MM/yyyy")</dd>
+                    @if (Model.DateFinContrat.HasValue) { <dt class="col-5">Fin contrat</dt><dd class="col-7">@Model.DateFinContrat.Value.ToString("dd/MM/yyyy")</dd> }
+                    <dt class="col-5">Statut</dt><dd class="col-7"><span class="badge @statusClass">@statusText</span></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning"><h5 class="mb-0"><i class="bi bi-cash-stack me-2"></i>Rémunération</h5></div>
+    <div class="card-body p-0">
+        @if (Model.CompensationPackages != null && Model.CompensationPackages.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>Salaire</th><th>Début</th><th>Fin</th><th>Statut</th></tr></thead>
+                <tbody>
+                @foreach (var p in Model.CompensationPackages.OrderByDescending(x => x.EffectiveFrom))
+                {
+                    <tr class="@(p.IsActive ? "table-success" : "")">
+                        <td><strong>@p.BaseSalary.ToString("N2") TND</strong></td>
+                        <td>@p.EffectiveFrom.ToString("dd/MM/yyyy")</td>
+                        <td>@(p.EffectiveTo?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td><span class="badge @(p.IsActive ? "bg-success" : "bg-secondary")">@(p.IsActive ? "Actif" : "Inactif")</span></td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    }
-    else
+                </tbody>
+            </table>
+        }
+        else { <div class="text-center py-4 text-muted">Aucun package</div> }
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-pc-display me-2"></i>Équipements</h5>
+        <a asp-controller="Equipment" asp-action="Assign" asp-route-employeeId="@Model.Id" class="btn btn-sm btn-light"><i class="bi bi-plus-circle me-1"></i>Attribuer</a>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.EquipmentAssignments != null && Model.EquipmentAssignments.Any(a => a.ReturnDate == null))
+        {
+            <table class="table table-hover mb-0">
+                <thead class="table-light"><tr><th>Équipement</th><th>Type</th><th>Code</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody>
+                @foreach (var a in Model.EquipmentAssignments.Where(x => x.ReturnDate == null).OrderByDescending(x => x.AssignmentDate))
+                {
+                    <tr>
+                        <td><strong>@a.Equipment?.Name</strong></td>
+                        <td><span class="badge bg-info">@a.Equipment?.EquipmentType?.Name</span></td>
+                        <td><code>@a.Equipment?.InventoryCode</code></td>
+                        <td>@a.AssignmentDate.ToString("dd/MM/yyyy")</td>
+                        <td><a asp-controller="Equipment" asp-action="Return" asp-route-id="@a.Equipment?.EquipmentId" class="btn btn-sm btn-outline-warning"><i class="bi bi-box-arrow-in-left"></i></a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else { <div class="text-center py-4 text-muted">Aucun équipement</div> }
+    </div>
+    @if (Model.EquipmentAssignments?.Any() == true)
     {
-        <p class="text-muted">No compensation packages found.</p>
+        <div class="card-footer"><a asp-controller="EquipmentAssignment" asp-action="EmployeeEquipment" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-clock-history me-1"></i>Historique</a></div>
     }
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@if (!string.IsNullOrEmpty(Model.Notes))
+{
+    <div class="card shadow-sm mb-4"><div class="card-header"><h5 class="mb-0"><i class="bi bi-journal-text me-2"></i>Notes</h5></div><div class="card-body">@Model.Notes</div></div>
+}
+
+<a asp-action="Index" class="btn btn-outline-secondary mb-4"><i class="bi bi-arrow-left me-2"></i>Retour</a>
+
+<style>.avatar-large{width:100px;height:100px;background:#0d6efd;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:2rem}</style>

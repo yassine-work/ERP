@@ -1,0 +1,180 @@
+@{
+    ViewData["Title"] = "Recrutement";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-2">
+    <div>
+        <h1>Recrutement</h1>
+        <p class="text-muted mb-0">Gestion des offres d'emploi et des candidatures</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="CreateOffre" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Nouvelle Offre
+        </a>
+        <a asp-action="CreateCandidat" class="btn btn-secondary">
+            <i class="bi bi-person-plus"></i> Nouveau Candidat
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Statistics -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="label text-muted">Offres totales</span>
+                <h2 class="my-2">@ViewBag.JobOfferCount</h2>
+                <a asp-action="Offres" class="small">Voir tout →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="label text-muted">Offres publiées</span>
+                <h2 class="my-2">@ViewBag.PublishedOfferCount</h2>
+                <a asp-action="Offres" asp-route-status="Published" class="small">Voir →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="label text-muted">Candidats</span>
+                <h2 class="my-2">@ViewBag.CandidatCount</h2>
+                <a asp-action="Candidats" class="small">Voir tout →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="label text-muted">Candidatures en attente</span>
+                <h2 class="my-2">@ViewBag.PendingCandidatures</h2>
+                <a asp-action="Candidatures" class="small">Voir tout →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Job Offers -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Offres récentes</span>
+                <a asp-action="Offres" class="btn btn-sm btn-outline-secondary">Tout voir</a>
+            </div>
+            <div class="card-body p-0">
+                @{
+                    var recentOffers = ViewBag.RecentJobOffers as List<ERP.Models.JobOffer>;
+                }
+                @if (recentOffers != null && recentOffers.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var offer in recentOffers)
+                        {
+                            <a asp-action="DetailsOffre" asp-route-id="@offer.Id" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@offer.Title</strong>
+                                        <br>
+                                        <small class="text-muted">@offer.Department - @offer.ContractType</small>
+                                    </div>
+                                    <span class="badge @(offer.Status == ERP.Models.JobOfferStatus.Published ? "bg-success" : offer.Status == ERP.Models.JobOfferStatus.Draft ? "bg-warning" : "bg-secondary")">
+                                        @offer.Status
+                                    </span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-briefcase display-4"></i>
+                        <p class="mt-2">Aucune offre pour l'instant</p>
+                        <a asp-action="CreateOffre" class="btn btn-primary btn-sm">Créer une offre</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Applications -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Candidatures récentes</span>
+                <a asp-action="Candidatures" class="btn btn-sm btn-outline-secondary">Tout voir</a>
+            </div>
+            <div class="card-body p-0">
+                @{
+                    var recentCandidatures = ViewBag.RecentCandidatures as List<ERP.Models.Candidature>;
+                }
+                @if (recentCandidatures != null && recentCandidatures.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var candidature in recentCandidatures)
+                        {
+                            <a asp-action="EditCandidature" asp-route-id="@candidature.Id" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@candidature.Candidat?.NomComplet</strong>
+                                        <br>
+                                        <small class="text-muted">@candidature.JobOffer?.Title</small>
+                                    </div>
+                                    <span class="badge @(candidature.Status == ERP.Models.CandidatureStatus.Accepted ? "bg-success" : candidature.Status == ERP.Models.CandidatureStatus.Rejected ? "bg-danger" : "bg-info")">
+                                        @candidature.Status
+                                    </span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-people display-4"></i>
+                        <p class="mt-2">Aucune candidature pour l'instant</p>
+                        <a asp-action="CreateCandidature" class="btn btn-primary btn-sm">Ajouter une candidature</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mt-4">
+    <div class="card-header">Actions rapides</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h6 class="label mb-2">Offres d'emploi</h6>
+                <a asp-action="Offres" class="d-block mb-1">Toutes les offres</a>
+                <a asp-action="Offres" asp-route-status="Published" class="d-block mb-1">Offres publiées</a>
+                <a asp-action="CreateOffre" class="d-block">+ Nouvelle offre</a>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h6 class="label mb-2">Candidats</h6>
+                <a asp-action="Candidats" class="d-block mb-1">Tous les candidats</a>
+                <a asp-action="CreateCandidat" class="d-block">+ Nouveau candidat</a>
+            </div>
+            <div class="col-md-4">
+                <h6 class="label mb-2">Candidatures</h6>
+                <a asp-action="Candidatures" class="d-block mb-1">Toutes les candidatures</a>
+                <a asp-action="Candidatures" asp-route-status="Submitted" class="d-block mb-1">En attente</a>
+                <a asp-action="CreateCandidature" class="d-block">+ Nouvelle candidature</a>
+            </div>
+        </div>
+    </div>
+</div>

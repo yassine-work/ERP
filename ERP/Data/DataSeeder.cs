@@ -1,5 +1,6 @@
 using ERP.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 
 public static class DataSeeder
@@ -171,11 +172,272 @@ public static class DataSeeder
         modelBuilder.Entity<AdvantageType>().HasData(advantageTypes);
     }
 
+    public static void SeedEquipmentTypes(ModelBuilder modelBuilder)
+    {
+        var equipmentTypes = new List<EquipmentType>
+        {
+            new EquipmentType
+            {
+                EquipmentTypeId = 1,
+                Name = "Ordinateur Portable",
+                Description = "Ordinateur portable professionnel pour le travail",
+                Category = "Informatique",
+                EstimatedLifespanMonths = 48,
+                RequiresMaintenance = true
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 2,
+                Name = "Ordinateur de Bureau",
+                Description = "Ordinateur fixe avec écran pour le bureau",
+                Category = "Informatique",
+                EstimatedLifespanMonths = 60,
+                RequiresMaintenance = true
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 3,
+                Name = "Téléphone Mobile",
+                Description = "Smartphone professionnel",
+                Category = "Informatique",
+                EstimatedLifespanMonths = 24,
+                RequiresMaintenance = false
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 4,
+                Name = "Badge d'accès",
+                Description = "Badge d'accès aux locaux de l'entreprise",
+                Category = "Sécurité",
+                EstimatedLifespanMonths = null,
+                RequiresMaintenance = false
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 5,
+                Name = "Clés de bureau",
+                Description = "Trousseau de clés pour accès aux bureaux",
+                Category = "Sécurité",
+                EstimatedLifespanMonths = null,
+                RequiresMaintenance = false
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 6,
+                Name = "Tenue de travail",
+                Description = "Uniforme ou vêtements de travail fournis",
+                Category = "Vêtements",
+                EstimatedLifespanMonths = 12,
+                RequiresMaintenance = false
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 7,
+                Name = "Équipement de sécurité",
+                Description = "Casque, gants, lunettes de protection, etc.",
+                Category = "Sécurité",
+                EstimatedLifespanMonths = 12,
+                RequiresMaintenance = false
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 8,
+                Name = "Mobilier de bureau",
+                Description = "Bureau, chaise ergonomique, etc.",
+                Category = "Mobilier",
+                EstimatedLifespanMonths = 120,
+                RequiresMaintenance = false
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 9,
+                Name = "Véhicule de service",
+                Description = "Voiture ou véhicule de fonction",
+                Category = "Transport",
+                EstimatedLifespanMonths = 60,
+                RequiresMaintenance = true
+            },
+            new EquipmentType
+            {
+                EquipmentTypeId = 10,
+                Name = "Écran supplémentaire",
+                Description = "Moniteur additionnel pour le poste de travail",
+                Category = "Informatique",
+                EstimatedLifespanMonths = 72,
+                RequiresMaintenance = false
+            }
+        };
+
+        modelBuilder.Entity<EquipmentType>().HasData(equipmentTypes);
+    }
+
+    public static void SeedEquipments(ModelBuilder modelBuilder)
+    {
+        var equipments = new List<Equipment>
+        {
+            // Laptops
+            new Equipment
+            {
+                EquipmentId = 1,
+                Name = "MacBook Pro 14\"",
+                SerialNumber = "C02X12345678",
+                InventoryCode = "LAP-001",
+                EquipmentTypeId = 1,
+                Brand = "Apple",
+                Model = "MacBook Pro 14\" M3",
+                AcquisitionDate = new DateTime(2025, 1, 15),
+                PurchasePrice = 2499.00m,
+                Supplier = "Apple Store",
+                WarrantyEndDate = new DateTime(2028, 1, 15),
+                Status = EquipmentStatus.Available
+            },
+            new Equipment
+            {
+                EquipmentId = 2,
+                Name = "ThinkPad X1 Carbon",
+                SerialNumber = "PF2ABCD1234",
+                InventoryCode = "LAP-002",
+                EquipmentTypeId = 1,
+                Brand = "Lenovo",
+                Model = "ThinkPad X1 Carbon Gen 11",
+                AcquisitionDate = new DateTime(2025, 2, 1),
+                PurchasePrice = 1899.00m,
+                Supplier = "Lenovo Direct",
+                WarrantyEndDate = new DateTime(2028, 2, 1),
+                Status = EquipmentStatus.Available
+            },
+            new Equipment
+            {
+                EquipmentId = 3,
+                Name = "Dell Latitude 5540",
+                SerialNumber = "DELL12345ABC",
+                InventoryCode = "LAP-003",
+                EquipmentTypeId = 1,
+                Brand = "Dell",
+                Model = "Latitude 5540",
+                AcquisitionDate = new DateTime(2025, 3, 10),
+                PurchasePrice = 1299.00m,
+                Supplier = "Dell Business",
+                WarrantyEndDate = new DateTime(2028, 3, 10),
+                Status = EquipmentStatus.Available
+            },
+            // Desktop
+            new Equipment
+            {
+                EquipmentId = 4,
+                Name = "Dell OptiPlex 7010",
+                SerialNumber = "OPTIPLEX7890",
+                InventoryCode = "DES-001",
+                EquipmentTypeId = 2,
+                Brand = "Dell",
+                Model = "OptiPlex 7010",
+                AcquisitionDate = new DateTime(2024, 6, 20),
+                PurchasePrice = 899.00m,
+                Supplier = "Dell Business",
+                WarrantyEndDate = new DateTime(2027, 6, 20),
+                Status = EquipmentStatus.Available
+            },
+            // Phones
+            new Equipment
+            {
+                EquipmentId = 5,
+                Name = "iPhone 15 Pro",
+                SerialNumber = "DQWERTY12345",
+                InventoryCode = "PHN-001",
+                EquipmentTypeId = 3,
+                Brand = "Apple",
+                Model = "iPhone 15 Pro 256GB",
+                AcquisitionDate = new DateTime(2025, 1, 5),
+                PurchasePrice = 1199.00m,
+                Supplier = "Apple Store",
+                WarrantyEndDate = new DateTime(2027, 1, 5),
+                Status = EquipmentStatus.Available
+            },
+            new Equipment
+            {
+                EquipmentId = 6,
+                Name = "Samsung Galaxy S24",
+                SerialNumber = "RFCM12345678",
+                InventoryCode = "PHN-002",
+                EquipmentTypeId = 3,
+                Brand = "Samsung",
+                Model = "Galaxy S24 Ultra",
+                AcquisitionDate = new DateTime(2025, 2, 15),
+                PurchasePrice = 1099.00m,
+                Supplier = "Samsung Business",
+                WarrantyEndDate = new DateTime(2027, 2, 15),
+                Status = EquipmentStatus.Available
+            },
+            // Access badges
+            new Equipment
+            {
+                EquipmentId = 7,
+                Name = "Badge Accès Principal",
+                SerialNumber = "BADGE-001",
+                InventoryCode = "BAD-001",
+                EquipmentTypeId = 4,
+                Brand = "HID",
+                Model = "iCLASS SE",
+                AcquisitionDate = new DateTime(2024, 1, 1),
+                PurchasePrice = 15.00m,
+                Status = EquipmentStatus.Available
+            },
+            new Equipment
+            {
+                EquipmentId = 8,
+                Name = "Badge Accès Principal",
+                SerialNumber = "BADGE-002",
+                InventoryCode = "BAD-002",
+                EquipmentTypeId = 4,
+                Brand = "HID",
+                Model = "iCLASS SE",
+                AcquisitionDate = new DateTime(2024, 1, 1),
+                PurchasePrice = 15.00m,
+                Status = EquipmentStatus.Available
+            },
+            // Monitors
+            new Equipment
+            {
+                EquipmentId = 9,
+                Name = "Dell UltraSharp 27\"",
+                SerialNumber = "MONITOR-001",
+                InventoryCode = "MON-001",
+                EquipmentTypeId = 10,
+                Brand = "Dell",
+                Model = "UltraSharp U2722D",
+                AcquisitionDate = new DateTime(2024, 8, 15),
+                PurchasePrice = 549.00m,
+                Supplier = "Dell Business",
+                WarrantyEndDate = new DateTime(2027, 8, 15),
+                Status = EquipmentStatus.Available
+            },
+            new Equipment
+            {
+                EquipmentId = 10,
+                Name = "LG 34\" Curved",
+                SerialNumber = "MONITOR-002",
+                InventoryCode = "MON-002",
+                EquipmentTypeId = 10,
+                Brand = "LG",
+                Model = "34WN80C-B",
+                AcquisitionDate = new DateTime(2024, 9, 1),
+                PurchasePrice = 699.00m,
+                Supplier = "Amazon Business",
+                WarrantyEndDate = new DateTime(2027, 9, 1),
+                Status = EquipmentStatus.Available
+            }
+        };
+
+        modelBuilder.Entity<Equipment>().HasData(equipments);
+    }
+
     public static void SeedAll(ModelBuilder modelBuilder)
     {
         SeedPostes(modelBuilder);
         SeedAllowanceTypes(modelBuilder);
         SeedBonusTypes(modelBuilder);
         SeedAdvantageTypes(modelBuilder);
+        SeedEquipmentTypes(modelBuilder);
+        SeedEquipments(modelBuilder);
     }
 }

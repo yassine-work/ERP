@@ -1,0 +1,63 @@
+@model ERP.Models.EquipmentType
+
+@{
+    ViewData["Title"] = "Modifier le type d'équipement";
+}
+
+<h1>Modifier le type d'équipement</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="EquipmentTypeId" />
+            
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Category" class="control-label"></label>
+                <select asp-for="Category" class="form-select">
+                    <option value="">-- Sélectionner --</option>
+                    <option value="Informatique">Informatique</option>
+                    <option value="Mobilier">Mobilier</option>
+                    <option value="Sécurité">Sécurité</option>
+                    <option value="Vêtements">Vêtements</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Autre">Autre</option>
+                </select>
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="EstimatedLifespanMonths" class="control-label"></label>
+                <input asp-for="EstimatedLifespanMonths" class="form-control" type="number" min="0" />
+                <span asp-validation-for="EstimatedLifespanMonths" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3 form-check">
+                <input asp-for="RequiresMaintenance" class="form-check-input" />
+                <label asp-for="RequiresMaintenance" class="form-check-label"></label>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Enregistrer" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

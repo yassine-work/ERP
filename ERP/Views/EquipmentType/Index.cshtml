@@ -1,0 +1,77 @@
+@model IEnumerable<ERP.Models.EquipmentType>
+
+@{
+    ViewData["Title"] = "Types d'équipements";
+}
+
+<h1>Types d'équipements</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Nouveau type
+    </a>
+</p>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Description</th>
+            <th>Durée de vie (mois)</th>
+            <th>Maintenance</th>
+            <th>Nb équipements</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.Category))
+                    {
+                        <span class="badge bg-info">@item.Category</span>
+                    }
+                </td>
+                <td>@(item.Description?.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description)</td>
+                <td>@(item.EstimatedLifespanMonths?.ToString() ?? "-")</td>
+                <td>
+                    @if (item.RequiresMaintenance)
+                    {
+                        <span class="badge bg-warning">Oui</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Non</span>
+                    }
+                </td>
+                <td>
+                    <span class="badge bg-primary">@(item.Equipments?.Count ?? 0)</span>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.EquipmentTypeId" class="btn btn-sm btn-info">Détails</a>
+                    <a asp-action="Edit" asp-route-id="@item.EquipmentTypeId" class="btn btn-sm btn-warning">Modifier</a>
+                    <a asp-action="Delete" asp-route-id="@item.EquipmentTypeId" class="btn btn-sm btn-danger">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

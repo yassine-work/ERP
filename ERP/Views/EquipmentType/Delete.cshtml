@@ -1,0 +1,51 @@
+@model ERP.Models.EquipmentType
+
+@{
+    ViewData["Title"] = "Supprimer le type d'équipement";
+}
+
+<h1>Supprimer le type d'équipement</h1>
+
+<div class="alert alert-danger">
+    <h4>Êtes-vous sûr de vouloir supprimer ce type d'équipement ?</h4>
+    <p>Cette action est irréversible.</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Nom</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+
+            <dt class="col-sm-3">Catégorie</dt>
+            <dd class="col-sm-9">@(Model.Category ?? "Non définie")</dd>
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@(Model.Description ?? "Aucune description")</dd>
+
+            <dt class="col-sm-3">Équipements associés</dt>
+            <dd class="col-sm-9">
+                @if (Model.Equipments != null && Model.Equipments.Any())
+                {
+                    <span class="badge bg-danger">@Model.Equipments.Count équipement(s)</span>
+                    <p class="text-danger mt-2">
+                        <strong>Attention :</strong> Ce type a des équipements associés et ne peut pas être supprimé.
+                    </p>
+                }
+                else
+                {
+                    <span class="badge bg-success">Aucun</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete" class="mt-3">
+    <input type="hidden" asp-for="EquipmentTypeId" />
+    @if (Model.Equipments == null || !Model.Equipments.Any())
+    {
+        <input type="submit" value="Confirmer la suppression" class="btn btn-danger" />
+    }
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>

@@ -1,0 +1,135 @@
+@model IEnumerable<ERP.Models.EquipmentAssignment>
+
+@{
+    ViewData["Title"] = "Historique des attributions";
+    var employees = ViewBag.Employees as List<ERP.Models.Employe>;
+}
+
+<h1>Historique des attributions</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Filter Form -->
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Employé</label>
+                <select name="employeeId" class="form-select">
+                    <option value="">-- Tous les employés --</option>
+                    @foreach (var emp in employees)
+                    {
+                        <option value="@emp.Id" selected="@(ViewBag.EmployeeId == emp.Id)">@emp.Prenom @emp.Nom</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Statut</label>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" name="activeOnly" value="true" id="activeOnly" 
+                           checked="@(ViewBag.ActiveOnly == true)">
+                    <label class="form-check-label" for="activeOnly">
+                        Attributions actives uniquement
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Filtrer</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<p>
+    <a asp-controller="Equipment" asp-action="Index" class="btn btn-outline-secondary">
+        Retour aux équipements
+    </a>
+</p>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Équipement</th>
+            <th>Type</th>
+            <th>Employé</th>
+            <th>Date attribution</th>
+            <th>Date retour</th>
+            <th>Statut</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(item.ReturnDate == null ? "table-primary" : "")">
+                <td>
+                    <a asp-controller="Equipment" asp-action="Details" asp-route-id="@item.EquipmentId">
+                        @item.Equipment?.Name
+                    </a>
+                    <br />
+                    <small class="text-muted"><code>@item.Equipment?.InventoryCode</code></small>
+                </td>
+                <td>
+                    <span class="badge bg-info">@item.Equipment?.EquipmentType?.Name</span>
+                </td>
+                <td>
+                    <a asp-controller="Employes" asp-action="Details" asp-route-id="@item.EmployeeId">
+                        @item.Employee?.Prenom @item.Employee?.Nom
+                    </a>
+                    <br />
+                    <small class="text-muted">@item.Employee?.Poste?.Title</small>
+                </td>
+                <td>@item.AssignmentDate.ToShortDateString()</td>
+                <td>
+                    @if (item.ReturnDate.HasValue)
+                    {
+                        @item.ReturnDate.Value.ToShortDateString()
+                    }
+                    else
+                    {
+                        <span class="text-muted">-</span>
+                    }
+                </td>
+                <td>
+                    @if (item.ReturnDate == null)
+                    {
+                        <span class="badge bg-primary">En cours</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Terminée</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.AssignmentId" class="btn btn-sm btn-info">Détails</a>
+                    @if (item.ReturnDate == null)
+                    {
+                        <a asp-controller="Equipment" asp-action="Return" asp-route-id="@item.EquipmentId" class="btn btn-sm btn-warning">Retour</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Aucune attribution trouvée avec les critères sélectionnés.
+    </div>
+}

@@ -1,0 +1,79 @@
+@model ERP.Models.Equipment
+
+@{
+    ViewData["Title"] = "Supprimer l'équipement";
+}
+
+<h1>Supprimer l'équipement</h1>
+
+<div class="alert alert-danger">
+    <h4>Êtes-vous sûr de vouloir supprimer cet équipement ?</h4>
+    <p>Cette action est irréversible. L'historique des attributions sera également supprimé.</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Nom</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+
+            <dt class="col-sm-3">Code d'inventaire</dt>
+            <dd class="col-sm-9"><code>@Model.InventoryCode</code></dd>
+
+            <dt class="col-sm-3">Numéro de série</dt>
+            <dd class="col-sm-9">@(Model.SerialNumber ?? "-")</dd>
+
+            <dt class="col-sm-3">Type</dt>
+            <dd class="col-sm-9">@Model.EquipmentType?.Name</dd>
+
+            <dt class="col-sm-3">Marque / Modèle</dt>
+            <dd class="col-sm-9">@Model.Brand @Model.Model</dd>
+
+            <dt class="col-sm-3">Statut actuel</dt>
+            <dd class="col-sm-9">
+                @switch (Model.Status)
+                {
+                    case ERP.Models.EquipmentStatus.Available:
+                        <span class="badge bg-success">Disponible</span>
+                        break;
+                    case ERP.Models.EquipmentStatus.Assigned:
+                        <span class="badge bg-primary">Attribué</span>
+                        <p class="text-danger mt-2">
+                            <strong>Attention :</strong> Cet équipement est actuellement attribué et ne peut pas être supprimé.
+                        </p>
+                        break;
+                    case ERP.Models.EquipmentStatus.InMaintenance:
+                        <span class="badge bg-warning">En maintenance</span>
+                        break;
+                    case ERP.Models.EquipmentStatus.Retired:
+                        <span class="badge bg-secondary">Retiré</span>
+                        break;
+                    case ERP.Models.EquipmentStatus.Lost:
+                        <span class="badge bg-danger">Perdu</span>
+                        break;
+                }
+            </dd>
+
+            <dt class="col-sm-3">Historique</dt>
+            <dd class="col-sm-9">
+                @if (Model.Assignments != null && Model.Assignments.Any())
+                {
+                    <span>@Model.Assignments.Count attribution(s) seront supprimées</span>
+                }
+                else
+                {
+                    <span class="text-muted">Aucune attribution</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete" class="mt-3">
+    <input type="hidden" asp-for="EquipmentId" />
+    @if (Model.Status != ERP.Models.EquipmentStatus.Assigned)
+    {
+        <input type="submit" value="Confirmer la suppression" class="btn btn-danger" />
+    }
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>

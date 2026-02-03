@@ -1,93 +1,142 @@
 @model IEnumerable<ERP.Models.Employe>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Annuaire des Employés";
 }
 
-<h1>Index</h1>
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <span class="label">Gestion du Personnel</span>
+        <h1 class="mt-2">Annuaire des Employés</h1>
+        <p class="mono">@Model.Count() employé(s) enregistré(s)</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        + Nouvel Employé
+    </a>
+</div>
 
 @if (TempData["ErrorMessage"] != null)
 {
-    <div class="alert alert-danger alert-dismissible fade show">
+    <div class="alert alert-danger">
         @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show">
+    <div class="alert alert-success">
         @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Prenom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateNaissance)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telephone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Adresse)
-            </th>
-            <th>
-                Poste
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateEmbauche)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Prenom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateNaissance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telephone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Adresse)
-            </td>
-            <td>
-                @item.Poste.Title (@item.Poste.Department)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateEmbauche)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Employé</th>
+                    <th>Poste</th>
+                    <th>Contact</th>
+                    <th>Embauche</th>
+                    <th>Statut</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        <span class="mono">@item.Matricule</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-circle me-3" style="width: 44px; height: 44px; font-size: 0.75rem;">
+                                @item.Prenom?.Substring(0, 1).ToUpper()@item.Nom?.Substring(0, 1).ToUpper()
+                            </div>
+                            <div>
+                                <strong>@item.Nom?.ToUpper()</strong> @item.Prenom
+                                @if (item.Gender.HasValue)
+                                {
+                                    <span class="mono" style="font-size: 0.65rem; color: var(--neutral-500);">
+                                        @(item.Gender == ERP.Models.Gender.Male ? "M" : item.Gender == ERP.Models.Gender.Female ? "F" : "—")
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        @if (item.Poste != null)
+                        {
+                            <strong>@item.Poste.Title</strong>
+                            <span class="label d-block mt-1">@item.Poste.Department</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="mailto:@item.Email">@item.Email</a>
+                        <span class="mono d-block" style="font-size: 0.8rem;">@item.Telephone</span>
+                    </td>
+                    <td>
+                        <span class="mono">@item.DateEmbauche.ToString("dd.MM.yyyy")</span>
+                        @if (!string.IsNullOrEmpty(item.TypeContrat))
+                        {
+                            <span class="label d-block mt-1">@item.TypeContrat</span>
+                        }
+                    </td>
+                    <td>
+                        @{
+                            var statusClass = item.Status switch
+                            {
+                                ERP.Models.EmployeeStatus.Active => "bg-success",
+                                ERP.Models.EmployeeStatus.OnLeave => "bg-warning",
+                                ERP.Models.EmployeeStatus.Suspended => "bg-danger",
+                                ERP.Models.EmployeeStatus.Terminated => "bg-dark",
+                                ERP.Models.EmployeeStatus.Resigned => "bg-secondary",
+                                _ => "bg-secondary"
+                            };
+                            var statusText = item.Status switch
+                            {
+                                ERP.Models.EmployeeStatus.Active => "ACTIF",
+                                ERP.Models.EmployeeStatus.OnLeave => "CONGÉ",
+                                ERP.Models.EmployeeStatus.Suspended => "SUSPENDU",
+                                ERP.Models.EmployeeStatus.Terminated => "TERMINÉ",
+                                ERP.Models.EmployeeStatus.Resigned => "DÉMISSION",
+                                _ => "—"
+                            };
+                        }
+                        <span class="badge @statusClass">@statusText</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary" title="Voir">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" title="Supprimer">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card text-center py-5">
+        <div class="card-body">
+            <div class="ornament">❦</div>
+            <h3 class="mt-3">Aucun Employé Trouvé</h3>
+            <p class="lead">Commencez par enregistrer votre premier collaborateur.</p>
+            <a asp-action="Create" class="btn btn-primary mt-3">
+                + Ajouter un employé
+            </a>
+        </div>
+    </div>
 }
-    </tbody>
-</table>

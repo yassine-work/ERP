@@ -25,6 +25,26 @@ namespace ERP.Controllers
         }
 
         // ════════════════════════════════════════════════════════════
+        // INDEX (EMPLOYEES WITH COMPENSATION)
+        // ════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// List all employees with their current compensation packages
+        /// Gateway to manage compensation per employee
+        /// </summary>
+        public async Task<IActionResult> Index()
+        {
+            var employees = await _context.Employes
+                .Include(e => e.Poste)
+                .Include(e => e.CompensationPackages)
+                .OrderBy(e => e.Nom)
+                .ThenBy(e => e.Prenom)
+                .ToListAsync();
+
+            return View(employees);
+        }
+
+        // ════════════════════════════════════════════════════════════
         // HISTORY (READ-ONLY)
         // ════════════════════════════════════════════════════════════
 

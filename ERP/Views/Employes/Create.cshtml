@@ -1,126 +1,282 @@
 @model ERP.Models.Employe
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nouvel Employé";
 }
 
-<h1>Create</h1>
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2"><i class="bi bi-person-plus me-2"></i>Nouvel Employé</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Employés</a></li>
+                    <li class="breadcrumb-item active">Nouveau</li>
+                </ol>
+            </nav>
+        </div>
     </div>
-}
 
-<h4>Employe</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-            <div class="form-group">
-                <label asp-for="Nom" class="control-label"></label>
-                <input asp-for="Nom" class="form-control" />
-                <span asp-validation-for="Nom" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="Prenom" class="control-label"></label>
-                <input asp-for="Prenom" class="form-control" />
-                <span asp-validation-for="Prenom" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="DateNaissance" class="control-label"></label>
-                <input asp-for="DateNaissance" class="form-control" type="date" />
-                <span asp-validation-for="DateNaissance" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" type="email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="Telephone" class="control-label"></label>
-                <input asp-for="Telephone" class="form-control" />
-                <span asp-validation-for="Telephone" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="Adresse" class="control-label"></label>
-                <input asp-for="Adresse" class="form-control" />
-                <span asp-validation-for="Adresse" class="text-danger"></span>
-            </div>
-            
-            <!-- THIS IS THE MAIN CHANGE: Dropdown for Poste -->
-            <div class="form-group">
-                <label asp-for="PosteId" class="control-label">Poste</label>
-                <div class="d-flex gap-2">
-                    <select asp-for="PosteId" class="form-control" id="posteSelect">
-                        <option value="">-- Select a Poste --</option>
-                        @if (ViewBag.Postes != null)
-                        {
-                            @foreach (var poste in ViewBag.Postes as List<ERP.Models.Poste>)
-                            {
-                                @if (ViewBag.SelectedPosteId != null && ViewBag.SelectedPosteId == poste.PosteId)
-                                {
-                                    <option value="@poste.PosteId" data-min-salary="@poste.MinimumBaseSalary" selected>
-                                        @poste.Title (@poste.Department)
-                                    </option>
-                                }
-                                else
-                                {
-                                    <option value="@poste.PosteId" data-min-salary="@poste.MinimumBaseSalary">
-                                        @poste.Title (@poste.Department)
-                                    </option>
-                                }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-                            }
-                        }
-                    </select>
-                    <a asp-controller="Poste" asp-action="Create" asp-route-returnUrl="@Url.Action("Create", "Employes")" 
-                       class="btn btn-outline-primary" title="Create New Poste">
-                        <i class="bi bi-plus-circle"></i> New
-                    </a>
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        
+        <div class="row">
+            <!-- Informations Personnelles -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-person me-2"></i>Informations Personnelles</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Matricule" class="form-label"></label>
+                                <input asp-for="Matricule" class="form-control" placeholder="EMP001" />
+                                <span asp-validation-for="Matricule" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Gender" class="form-label"></label>
+                                <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<ERP.Models.Gender>()">
+                                    <option value="">-- Sélectionner --</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Nom" class="form-label"></label>
+                                <input asp-for="Nom" class="form-control" />
+                                <span asp-validation-for="Nom" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Prenom" class="form-label"></label>
+                                <input asp-for="Prenom" class="form-control" />
+                                <span asp-validation-for="Prenom" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateNaissance" class="form-label"></label>
+                                <input asp-for="DateNaissance" class="form-control" type="date" />
+                                <span asp-validation-for="DateNaissance" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LieuNaissance" class="form-label"></label>
+                                <input asp-for="LieuNaissance" class="form-control" />
+                                <span asp-validation-for="LieuNaissance" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CIN" class="form-label"></label>
+                                <input asp-for="CIN" class="form-control" placeholder="12345678" />
+                                <span asp-validation-for="CIN" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Nationalite" class="form-label"></label>
+                                <input asp-for="Nationalite" class="form-control" value="Tunisienne" />
+                                <span asp-validation-for="Nationalite" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SituationFamiliale" class="form-label"></label>
+                                <select asp-for="SituationFamiliale" class="form-select">
+                                    <option value="">-- Sélectionner --</option>
+                                    <option value="Célibataire">Célibataire</option>
+                                    <option value="Marié(e)">Marié(e)</option>
+                                    <option value="Divorcé(e)">Divorcé(e)</option>
+                                    <option value="Veuf(ve)">Veuf(ve)</option>
+                                </select>
+                                <span asp-validation-for="SituationFamiliale" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NombreEnfants" class="form-label"></label>
+                                <input asp-for="NombreEnfants" class="form-control" type="number" min="0" value="0" />
+                                <span asp-validation-for="NombreEnfants" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <span asp-validation-for="PosteId" class="text-danger"></span>
-                <small class="form-text text-muted" id="salaryInfo"></small>
             </div>
-            
-            <div class="form-group">
-                <label asp-for="DateEmbauche" class="control-label"></label>
-                <input asp-for="DateEmbauche" class="form-control" type="date" />
-                <span asp-validation-for="DateEmbauche" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+            <!-- Contact & Adresse -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Contact & Adresse</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" type="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Telephone" class="form-label"></label>
+                                <input asp-for="Telephone" class="form-control" placeholder="+216 XX XXX XXX" />
+                                <span asp-validation-for="Telephone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Adresse" class="form-label"></label>
+                            <input asp-for="Adresse" class="form-control" />
+                            <span asp-validation-for="Adresse" class="text-danger"></span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label asp-for="Ville" class="form-label"></label>
+                                <input asp-for="Ville" class="form-control" />
+                                <span asp-validation-for="Ville" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="CodePostal" class="form-label"></label>
+                                <input asp-for="CodePostal" class="form-control" />
+                                <span asp-validation-for="CodePostal" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <hr />
+                        <h6 class="text-muted mb-3"><i class="bi bi-telephone-outbound me-1"></i>Contact d'Urgence</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ContactUrgence" class="form-label"></label>
+                                <input asp-for="ContactUrgence" class="form-control" placeholder="Nom du contact" />
+                                <span asp-validation-for="ContactUrgence" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TelephoneUrgence" class="form-label"></label>
+                                <input asp-for="TelephoneUrgence" class="form-control" placeholder="+216 XX XXX XXX" />
+                                <span asp-validation-for="TelephoneUrgence" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Informations Professionnelles -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-briefcase me-2"></i>Informations Professionnelles</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="PosteId" class="form-label">Poste</label>
+                            <div class="d-flex gap-2">
+                                <select asp-for="PosteId" class="form-select" id="posteSelect">
+                                    <option value="">-- Sélectionner un poste --</option>
+                                    @if (ViewBag.Postes != null)
+                                    {
+                                        @foreach (var poste in ViewBag.Postes as List<ERP.Models.Poste>)
+                                        {
+                                            var isSelected = ViewBag.SelectedPosteId != null && ViewBag.SelectedPosteId == poste.PosteId;
+                                            <option value="@poste.PosteId" data-min-salary="@poste.MinimumBaseSalary" selected="@isSelected">
+                                                @poste.Title (@poste.Department)
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                                <a asp-controller="Poste" asp-action="Create" asp-route-returnUrl="@Url.Action("Create", "Employes")" 
+                                   class="btn btn-outline-success" title="Nouveau poste">
+                                    <i class="bi bi-plus-circle"></i>
+                                </a>
+                            </div>
+                            <span asp-validation-for="PosteId" class="text-danger"></span>
+                            <small class="form-text text-muted" id="salaryInfo"></small>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TypeContrat" class="form-label"></label>
+                                <select asp-for="TypeContrat" class="form-select">
+                                    <option value="">-- Sélectionner --</option>
+                                    <option value="CDI">CDI - Contrat à durée indéterminée</option>
+                                    <option value="CDD">CDD - Contrat à durée déterminée</option>
+                                    <option value="Stage">Stage</option>
+                                    <option value="Intérim">Intérim</option>
+                                    <option value="Freelance">Freelance</option>
+                                </select>
+                                <span asp-validation-for="TypeContrat" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Status" class="form-label"></label>
+                                <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<ERP.Models.EmployeeStatus>()">
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateEmbauche" class="form-label"></label>
+                                <input asp-for="DateEmbauche" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="DateEmbauche" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DateFinContrat" class="form-label"></label>
+                                <input asp-for="DateFinContrat" class="form-control" type="date" />
+                                <span asp-validation-for="DateFinContrat" class="text-danger"></span>
+                                <small class="form-text text-muted">Optionnel pour CDI</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes & Photo -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="bi bi-journal-text me-2"></i>Informations Supplémentaires</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="PhotoUrl" class="form-label"></label>
+                            <input asp-for="PhotoUrl" class="form-control" placeholder="URL de la photo" />
+                            <span asp-validation-for="PhotoUrl" class="text-danger"></span>
+                            <small class="form-text text-muted">URL vers la photo de l'employé</small>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="5" placeholder="Notes additionnelles..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-circle me-2"></i>Créer l'employé
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-x-circle me-2"></i>Annuler
+            </a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     
     <script>
-        // Show minimum salary when a poste is selected
         document.getElementById('posteSelect').addEventListener('change', function() {
             var selectedOption = this.options[this.selectedIndex];
             var minSalary = selectedOption.getAttribute('data-min-salary');
             
             if (minSalary && minSalary !== '') {
                 document.getElementById('salaryInfo').textContent = 
-                    'Default Base Salary: ' + parseFloat(minSalary).toFixed(2) + ' TND';
+                    'Salaire de base par défaut: ' + parseFloat(minSalary).toFixed(2) + ' TND';
             } else {
                 document.getElementById('salaryInfo').textContent = '';
             }

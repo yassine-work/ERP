@@ -3,7 +3,6 @@ using System;
 using ERP.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -12,45 +11,39 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260126132302_UpdateSeededTypeFields")]
-    partial class UpdateSeededTypeFields
+    [Migration("20260202231649_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.23")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
             modelBuilder.Entity("ERP.Models.AdvantageType", b =>
                 {
                     b.Property<int>("AdvantageTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdvantageTypeId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("AdvantageTypeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("EligibilityRule")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsTaxable")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Provider")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("AdvantageTypeId");
 
@@ -90,28 +83,26 @@ namespace ERP.Migrations
                 {
                     b.Property<int>("AllowanceTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AllowanceTypeId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("AllowanceTypeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("EligibilityRule")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsTaxable")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Provider")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("AllowanceTypeId");
 
@@ -160,27 +151,25 @@ namespace ERP.Migrations
                 {
                     b.Property<int>("BonusTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BonusTypeId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("BonusRule")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("BonusTypeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsAutomatic")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsTaxable")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("BonusTypeId");
 
@@ -220,24 +209,22 @@ namespace ERP.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("BaseSalary")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("EffectiveFrom")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("EffectiveTo")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -250,38 +237,95 @@ namespace ERP.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Adresse")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CIN")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CodePostal")
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactUrgence")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DateEmbauche")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DateFinContrat")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DateNaissance")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Gender")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LieuNaissance")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Matricule")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nationalite")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Nom")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("NombreEnfants")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PosteId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Prenom")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SituationFamiliale")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Telephone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TelephoneUrgence")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TypeContrat")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Ville")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -294,27 +338,25 @@ namespace ERP.Migrations
                 {
                     b.Property<int>("EmployeeAdvantageId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeAdvantageId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("AdvantageTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("CompensationPackageId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("EmployeeAdvantageId");
 
@@ -330,34 +372,32 @@ namespace ERP.Migrations
                 {
                     b.Property<int>("EmployeeAllowanceId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeAllowanceId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("AllowanceTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("CompensationPackageId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("EffectiveFrom")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("EffectiveTo")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Frequency")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsRecurring")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsTaxable")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("EmployeeAllowanceId");
 
@@ -373,40 +413,38 @@ namespace ERP.Migrations
                 {
                     b.Property<int>("EmployeeBonusId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeBonusId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("AwardedOn")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("BonusRule")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("BonusTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("CompensationPackageId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsAutomatic")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsExceptional")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsPerformanceBased")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsTaxable")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("ValidUntil")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("EmployeeBonusId");
 
@@ -418,24 +456,392 @@ namespace ERP.Migrations
                     b.ToTable("EmployeeBonuses");
                 });
 
+            modelBuilder.Entity("ERP.Models.Equipment", b =>
+                {
+                    b.Property<int>("EquipmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("AcquisitionDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Brand")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("EquipmentTypeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("InventoryCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Model")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("PurchasePrice")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SerialNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Supplier")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("WarrantyEndDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("EquipmentId");
+
+                    b.HasIndex("EquipmentTypeId");
+
+                    b.ToTable("Equipments");
+
+                    b.HasData(
+                        new
+                        {
+                            EquipmentId = 1,
+                            AcquisitionDate = new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "Apple",
+                            EquipmentTypeId = 1,
+                            InventoryCode = "LAP-001",
+                            Model = "MacBook Pro 14\" M3",
+                            Name = "MacBook Pro 14\"",
+                            PurchasePrice = 2499.00m,
+                            SerialNumber = "C02X12345678",
+                            Status = 0,
+                            Supplier = "Apple Store",
+                            WarrantyEndDate = new DateTime(2028, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            EquipmentId = 2,
+                            AcquisitionDate = new DateTime(2025, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "Lenovo",
+                            EquipmentTypeId = 1,
+                            InventoryCode = "LAP-002",
+                            Model = "ThinkPad X1 Carbon Gen 11",
+                            Name = "ThinkPad X1 Carbon",
+                            PurchasePrice = 1899.00m,
+                            SerialNumber = "PF2ABCD1234",
+                            Status = 0,
+                            Supplier = "Lenovo Direct",
+                            WarrantyEndDate = new DateTime(2028, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            EquipmentId = 3,
+                            AcquisitionDate = new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "Dell",
+                            EquipmentTypeId = 1,
+                            InventoryCode = "LAP-003",
+                            Model = "Latitude 5540",
+                            Name = "Dell Latitude 5540",
+                            PurchasePrice = 1299.00m,
+                            SerialNumber = "DELL12345ABC",
+                            Status = 0,
+                            Supplier = "Dell Business",
+                            WarrantyEndDate = new DateTime(2028, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            EquipmentId = 4,
+                            AcquisitionDate = new DateTime(2024, 6, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "Dell",
+                            EquipmentTypeId = 2,
+                            InventoryCode = "DES-001",
+                            Model = "OptiPlex 7010",
+                            Name = "Dell OptiPlex 7010",
+                            PurchasePrice = 899.00m,
+                            SerialNumber = "OPTIPLEX7890",
+                            Status = 0,
+                            Supplier = "Dell Business",
+                            WarrantyEndDate = new DateTime(2027, 6, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            EquipmentId = 5,
+                            AcquisitionDate = new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "Apple",
+                            EquipmentTypeId = 3,
+                            InventoryCode = "PHN-001",
+                            Model = "iPhone 15 Pro 256GB",
+                            Name = "iPhone 15 Pro",
+                            PurchasePrice = 1199.00m,
+                            SerialNumber = "DQWERTY12345",
+                            Status = 0,
+                            Supplier = "Apple Store",
+                            WarrantyEndDate = new DateTime(2027, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            EquipmentId = 6,
+                            AcquisitionDate = new DateTime(2025, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "Samsung",
+                            EquipmentTypeId = 3,
+                            InventoryCode = "PHN-002",
+                            Model = "Galaxy S24 Ultra",
+                            Name = "Samsung Galaxy S24",
+                            PurchasePrice = 1099.00m,
+                            SerialNumber = "RFCM12345678",
+                            Status = 0,
+                            Supplier = "Samsung Business",
+                            WarrantyEndDate = new DateTime(2027, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            EquipmentId = 7,
+                            AcquisitionDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "HID",
+                            EquipmentTypeId = 4,
+                            InventoryCode = "BAD-001",
+                            Model = "iCLASS SE",
+                            Name = "Badge Accès Principal",
+                            PurchasePrice = 15.00m,
+                            SerialNumber = "BADGE-001",
+                            Status = 0
+                        },
+                        new
+                        {
+                            EquipmentId = 8,
+                            AcquisitionDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "HID",
+                            EquipmentTypeId = 4,
+                            InventoryCode = "BAD-002",
+                            Model = "iCLASS SE",
+                            Name = "Badge Accès Principal",
+                            PurchasePrice = 15.00m,
+                            SerialNumber = "BADGE-002",
+                            Status = 0
+                        },
+                        new
+                        {
+                            EquipmentId = 9,
+                            AcquisitionDate = new DateTime(2024, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "Dell",
+                            EquipmentTypeId = 10,
+                            InventoryCode = "MON-001",
+                            Model = "UltraSharp U2722D",
+                            Name = "Dell UltraSharp 27\"",
+                            PurchasePrice = 549.00m,
+                            SerialNumber = "MONITOR-001",
+                            Status = 0,
+                            Supplier = "Dell Business",
+                            WarrantyEndDate = new DateTime(2027, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            EquipmentId = 10,
+                            AcquisitionDate = new DateTime(2024, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Brand = "LG",
+                            EquipmentTypeId = 10,
+                            InventoryCode = "MON-002",
+                            Model = "34WN80C-B",
+                            Name = "LG 34\" Curved",
+                            PurchasePrice = 699.00m,
+                            SerialNumber = "MONITOR-002",
+                            Status = 0,
+                            Supplier = "Amazon Business",
+                            WarrantyEndDate = new DateTime(2027, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
+            modelBuilder.Entity("ERP.Models.EquipmentAssignment", b =>
+                {
+                    b.Property<int>("AssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AssignedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("AssignmentDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AssignmentNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ConditionAtAssignment")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ConditionAtReturn")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("EquipmentId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ReturnDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReturnNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("AssignmentId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EquipmentId");
+
+                    b.ToTable("EquipmentAssignments");
+                });
+
+            modelBuilder.Entity("ERP.Models.EquipmentType", b =>
+                {
+                    b.Property<int>("EquipmentTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("EstimatedLifespanMonths")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("RequiresMaintenance")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("EquipmentTypeId");
+
+                    b.ToTable("EquipmentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            EquipmentTypeId = 1,
+                            Category = "Informatique",
+                            Description = "Ordinateur portable professionnel pour le travail",
+                            EstimatedLifespanMonths = 48,
+                            Name = "Ordinateur Portable",
+                            RequiresMaintenance = true
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 2,
+                            Category = "Informatique",
+                            Description = "Ordinateur fixe avec écran pour le bureau",
+                            EstimatedLifespanMonths = 60,
+                            Name = "Ordinateur de Bureau",
+                            RequiresMaintenance = true
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 3,
+                            Category = "Informatique",
+                            Description = "Smartphone professionnel",
+                            EstimatedLifespanMonths = 24,
+                            Name = "Téléphone Mobile",
+                            RequiresMaintenance = false
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 4,
+                            Category = "Sécurité",
+                            Description = "Badge d'accès aux locaux de l'entreprise",
+                            Name = "Badge d'accès",
+                            RequiresMaintenance = false
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 5,
+                            Category = "Sécurité",
+                            Description = "Trousseau de clés pour accès aux bureaux",
+                            Name = "Clés de bureau",
+                            RequiresMaintenance = false
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 6,
+                            Category = "Vêtements",
+                            Description = "Uniforme ou vêtements de travail fournis",
+                            EstimatedLifespanMonths = 12,
+                            Name = "Tenue de travail",
+                            RequiresMaintenance = false
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 7,
+                            Category = "Sécurité",
+                            Description = "Casque, gants, lunettes de protection, etc.",
+                            EstimatedLifespanMonths = 12,
+                            Name = "Équipement de sécurité",
+                            RequiresMaintenance = false
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 8,
+                            Category = "Mobilier",
+                            Description = "Bureau, chaise ergonomique, etc.",
+                            EstimatedLifespanMonths = 120,
+                            Name = "Mobilier de bureau",
+                            RequiresMaintenance = false
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 9,
+                            Category = "Transport",
+                            Description = "Voiture ou véhicule de fonction",
+                            EstimatedLifespanMonths = 60,
+                            Name = "Véhicule de service",
+                            RequiresMaintenance = true
+                        },
+                        new
+                        {
+                            EquipmentTypeId = 10,
+                            Category = "Informatique",
+                            Description = "Moniteur additionnel pour le poste de travail",
+                            EstimatedLifespanMonths = 72,
+                            Name = "Écran supplémentaire",
+                            RequiresMaintenance = false
+                        });
+                });
+
             modelBuilder.Entity("ERP.Models.Poste", b =>
                 {
                     b.Property<int>("PosteId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PosteId"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Department")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("MinimumBaseSalary")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("PosteId");
 
@@ -719,6 +1125,36 @@ namespace ERP.Migrations
                     b.Navigation("CompensationPackage");
                 });
 
+            modelBuilder.Entity("ERP.Models.Equipment", b =>
+                {
+                    b.HasOne("ERP.Models.EquipmentType", "EquipmentType")
+                        .WithMany("Equipments")
+                        .HasForeignKey("EquipmentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EquipmentType");
+                });
+
+            modelBuilder.Entity("ERP.Models.EquipmentAssignment", b =>
+                {
+                    b.HasOne("ERP.Models.Employe", "Employee")
+                        .WithMany("EquipmentAssignments")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ERP.Models.Equipment", "Equipment")
+                        .WithMany("Assignments")
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Equipment");
+                });
+
             modelBuilder.Entity("ERP.Models.CompensationPackage", b =>
                 {
                     b.Navigation("Advantages");
@@ -731,6 +1167,18 @@ namespace ERP.Migrations
             modelBuilder.Entity("ERP.Models.Employe", b =>
                 {
                     b.Navigation("CompensationPackages");
+
+                    b.Navigation("EquipmentAssignments");
+                });
+
+            modelBuilder.Entity("ERP.Models.Equipment", b =>
+                {
+                    b.Navigation("Assignments");
+                });
+
+            modelBuilder.Entity("ERP.Models.EquipmentType", b =>
+                {
+                    b.Navigation("Equipments");
                 });
 
             modelBuilder.Entity("ERP.Models.Poste", b =>

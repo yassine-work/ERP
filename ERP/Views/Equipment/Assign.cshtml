@@ -1,0 +1,90 @@
+@model ERP.Models.EquipmentAssignment
+
+@{
+    ViewData["Title"] = "Attribuer l'équipement";
+    var equipment = ViewBag.Equipment as ERP.Models.Equipment;
+    var employees = ViewBag.Employees as List<ERP.Models.Employe>;
+}
+
+<h1>Attribuer l'équipement</h1>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0">Équipement à attribuer</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Nom</dt>
+            <dd class="col-sm-9">@equipment.Name</dd>
+            
+            <dt class="col-sm-3">Type</dt>
+            <dd class="col-sm-9"><span class="badge bg-info">@equipment.EquipmentType?.Name</span></dd>
+            
+            <dt class="col-sm-3">Code d'inventaire</dt>
+            <dd class="col-sm-9"><code>@equipment.InventoryCode</code></dd>
+            
+            <dt class="col-sm-3">Marque / Modèle</dt>
+            <dd class="col-sm-9">@equipment.Brand @equipment.Model</dd>
+        </dl>
+    </div>
+</div>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Assign">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="EquipmentId" />
+
+            <div class="form-group mb-3">
+                <label asp-for="EmployeeId" class="control-label"></label>
+                <select asp-for="EmployeeId" class="form-select">
+                    <option value="">-- Sélectionner un employé --</option>
+                    @foreach (var emp in employees)
+                    {
+                        <option value="@emp.Id">@emp.Prenom @emp.Nom (@emp.Poste?.Title)</option>
+                    }
+                </select>
+                <span asp-validation-for="EmployeeId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AssignmentDate" class="control-label"></label>
+                <input asp-for="AssignmentDate" class="form-control" type="date" />
+                <span asp-validation-for="AssignmentDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ConditionAtAssignment" class="control-label"></label>
+                <select asp-for="ConditionAtAssignment" class="form-select">
+                    <option value="@ERP.Models.AssignmentCondition.New">Neuf</option>
+                    <option value="@ERP.Models.AssignmentCondition.Good" selected>Bon état</option>
+                    <option value="@ERP.Models.AssignmentCondition.Fair">État correct</option>
+                    <option value="@ERP.Models.AssignmentCondition.Poor">Mauvais état</option>
+                </select>
+                <span asp-validation-for="ConditionAtAssignment" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AssignedBy" class="control-label"></label>
+                <input asp-for="AssignedBy" class="form-control" placeholder="Nom de la personne responsable" />
+                <span asp-validation-for="AssignedBy" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AssignmentNotes" class="control-label"></label>
+                <textarea asp-for="AssignmentNotes" class="form-control" rows="3" placeholder="Notes ou commentaires..."></textarea>
+                <span asp-validation-for="AssignmentNotes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Attribuer" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

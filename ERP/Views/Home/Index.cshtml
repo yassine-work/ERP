@@ -1,42 +1,198 @@
 ﻿@{
-    ViewData["Title"] = "Accueil";
+    ViewData["Title"] = "Tableau de Bord";
 }
 
-<div class="text-center hero-section">
-    <h1 class="hero-title">Gestion RH Moderne</h1>
-    <p class="lead mb-4">Centralisez, gérez et optimisez vos ressources humaines sur une seule plateforme.</p>
-    <a href="/Employes" class="btn btn-custom btn-lg">Accéder aux Dossiers Employés</a>
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-2">
+    <div>
+        <h1>Tableau de Bord</h1>
+        <p class="text-muted mb-0">Système de Gestion des Ressources Humaines</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Employes" asp-action="Create" class="btn btn-primary">
+            + Nouvel Employé
+        </a>
+    </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card feature-card p-4 text-center">
+<!-- Quick Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="label text-muted">Employés</span>
+                <h2 class="my-2">@ViewBag.EmployeeCount</h2>
+                <a asp-controller="Employes" asp-action="Index" class="small">Voir tout →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="label text-muted">Postes</span>
+                <h2 class="my-2">@ViewBag.PosteCount</h2>
+                <a asp-controller="Poste" asp-action="Index" class="small">Voir tout →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="label text-muted">Équipements</span>
+                <h2 class="my-2">@ViewBag.EquipmentCount</h2>
+                <a asp-controller="Equipment" asp-action="Index" class="small">Voir tout →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="label text-muted">Packages</span>
+                <h2 class="my-2">@ViewBag.PackageCount</h2>
+                <a asp-controller="CompensationPackage" asp-action="Index" class="small">Voir tout →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Modules -->
+<div class="row g-4 mb-4">
+    <!-- Gestion des Employés -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Gestion des Employés</span>
+            </div>
             <div class="card-body">
-                <div class="card-icon">📂</div> <h3 class="card-title">Dossiers Personnels</h3>
-                <p class="card-text text-muted">Gérez les informations essentielles, contrats et coordonnées de chaque collaborateur.</p>
-                <a href="/Employes" class="btn btn-outline-primary mt-3">Gérer</a>
+                <p>Gérez les dossiers du personnel, informations personnelles, contrats et coordonnées.</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-controller="Employes" asp-action="Index" class="btn btn-primary">
+                        Liste des employés
+                    </a>
+                    <a asp-controller="Employes" asp-action="Create" class="btn btn-secondary">
+                        + Ajouter
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a asp-controller="Poste" asp-action="Index" class="small">
+                    Gérer les postes →
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="card feature-card p-4 text-center">
+    <!-- Équipements -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Gestion des Équipements</span>
+            </div>
             <div class="card-body">
-                <div class="card-icon">🚀</div>
-                <h3 class="card-title">Recrutement</h3>
-                <p class="card-text text-muted">Suivez les candidatures et optimisez votre processus d'embauche facilement.</p>
-                <button class="btn btn-outline-secondary mt-3" disabled>Bientôt disponible</button>
+                <p>Suivez le matériel attribué aux employés : ordinateurs, téléphones, badges, etc.</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-controller="Equipment" asp-action="Index" class="btn btn-primary">
+                        Inventaire
+                    </a>
+                    <a asp-controller="Equipment" asp-action="Create" class="btn btn-secondary">
+                        + Ajouter
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a asp-controller="EquipmentAssignment" asp-action="Index" class="small me-3">
+                    Historique attributions →
+                </a>
+                <a asp-controller="EquipmentType" asp-action="Index" class="small">
+                    Types d'équipements →
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="card feature-card p-4 text-center">
+    <!-- Rémunération -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Rémunération & Avantages</span>
+            </div>
             <div class="card-body">
-                <div class="card-icon">💰</div>
-                <h3 class="card-title">Paie & Avantages</h3>
-                <p class="card-text text-muted">Administrez les rémunérations et suivez l'évolution salariale.</p>
-                <a href="/Paie" class="btn btn-outline-primary mt-3">Gérer</a>
+                <p>Administrez les salaires, packages de compensation, bonus et allocations.</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-controller="CompensationPackage" asp-action="Index" class="btn btn-primary">
+                        Packages
+                    </a>
+                    <a asp-controller="Paie" asp-action="Index" class="btn btn-secondary">
+                        Paie & Avantages
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a asp-controller="AdvantageType" asp-action="Index" class="small me-3">
+                    Avantages →
+                </a>
+                <a asp-controller="AllowanceType" asp-action="Index" class="small me-3">
+                    Allocations →
+                </a>
+                <a asp-controller="BonusType" asp-action="Index" class="small">
+                    Bonus →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recrutement -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Recrutement</span>
+                <span class="badge bg-success">@ViewBag.JobOfferCount offre(s) active(s)</span>
+            </div>
+            <div class="card-body">
+                <p>Gérez les offres d'emploi, candidatures et processus d'embauche.</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-controller="Recrutement" asp-action="Offres" class="btn btn-primary">
+                        Offres d'emploi
+                    </a>
+                    <a asp-controller="Recrutement" asp-action="Candidatures" class="btn btn-secondary">
+                        Candidatures
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a asp-controller="Recrutement" asp-action="Index" class="small me-3">
+                    Tableau de bord →
+                </a>
+                <a asp-controller="Recrutement" asp-action="Candidats" class="small">
+                    Candidats →
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Access Configuration -->
+<div class="card">
+    <div class="card-header">
+        <span>Configuration du Système</span>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h6 class="label mb-2">Postes</h6>
+                <a asp-controller="Poste" asp-action="Index" class="d-block mb-1">Liste des postes</a>
+                <a asp-controller="Poste" asp-action="Create" class="d-block">+ Nouveau poste</a>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h6 class="label mb-2">Types d'équipements</h6>
+                <a asp-controller="EquipmentType" asp-action="Index" class="d-block mb-1">Liste des types</a>
+                <a asp-controller="EquipmentType" asp-action="Create" class="d-block">+ Nouveau type</a>
+            </div>
+            <div class="col-md-4">
+                <h6 class="label mb-2">Rémunération</h6>
+                <a asp-controller="AdvantageType" asp-action="Index" class="d-block mb-1">Types d'avantages</a>
+                <a asp-controller="AllowanceType" asp-action="Index" class="d-block mb-1">Types d'allocations</a>
+                <a asp-controller="BonusType" asp-action="Index" class="d-block">Types de bonus</a>
             </div>
         </div>
     </div>
