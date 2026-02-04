@@ -1,0 +1,403 @@
+@model ERP.Models.Candidature
+
+@{
+    ViewData["Title"] = "Pipeline d'Embauche";
+    
+    var stages = new[]
+    {
+        new { Status = ERP.Models.CandidatureStatus.Accepted, Label = "Accepté", Description = "Candidat sélectionné" },
+        new { Status = ERP.Models.CandidatureStatus.OfferSent, Label = "Offre Envoyée", Description = "Proposition salariale" },
+        new { Status = ERP.Models.CandidatureStatus.OfferAccepted, Label = "Offre Acceptée", Description = "Candidat confirme" },
+        new { Status = ERP.Models.CandidatureStatus.PreBoarding, Label = "Pré-boarding", Description = "Préparation documents" },
+        new { Status = ERP.Models.CandidatureStatus.Employed, Label = "Embauché", Description = "Membre de l'équipe" }
+    };
+    
+    int currentStageIndex = Array.FindIndex(stages, s => s.Status == Model.Status);
+    if (currentStageIndex < 0) currentStageIndex = 0;
+}
+
+<!-- Page Header -->
+<div class="mb-4 pb-3 border-bottom border-2">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0" style="font-family: var(--font-mono); font-size: 0.75rem;">
+            <li class="breadcrumb-item"><a asp-action="Index">Recrutement</a></li>
+            <li class="breadcrumb-item"><a asp-action="Candidatures">Candidatures</a></li>
+            <li class="breadcrumb-item active">Pipeline</li>
+        </ol>
+    </nav>
+    <span class="label">Processus d'embauche</span>
+    <h1 class="mt-2">Pipeline d'Embauche</h1>
+    <p class="mono">Candidature #@Model.Id &mdash; @Model.Candidat?.Prenom @Model.Candidat?.Nom</p>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mb-4" style="border: 2px solid var(--newsprint-fg);">
+        <strong class="label">Succès</strong>
+        <p class="mb-0 mt-1">@TempData["Success"]</p>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mb-4" style="border: 2px solid var(--newsprint-accent);">
+        <strong class="label" style="color: var(--newsprint-accent);">Erreur</strong>
+        <p class="mb-0 mt-1">@TempData["Error"]</p>
+    </div>
+}
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning mb-4" style="border: 2px solid var(--newsprint-fg);">
+        <strong class="label">Attention</strong>
+        <p class="mb-0 mt-1">@TempData["Warning"]</p>
+    </div>
+}
+
+<!-- Candidate Info Card -->
+<div class="card mb-4">
+    <div class="card-header">
+        Informations du Candidat
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 border-end">
+                <span class="label text-muted">Identité</span>
+                <h3 class="mt-2 mb-2">@Model.Candidat?.Prenom @Model.Candidat?.Nom</h3>
+                <p class="mono mb-1">@Model.Candidat?.Email</p>
+                @if (!string.IsNullOrEmpty(Model.Candidat?.Telephone))
+                {
+                    <p class="mono mb-0">@Model.Candidat.Telephone</p>
+                }
+            </div>
+            <div class="col-md-4 border-end">
+                <span class="label text-muted">Poste visé</span>
+                <h4 class="mt-2 mb-1">@Model.JobOffer?.Title</h4>
+                <p class="mb-0">
+                    <span class="label">@Model.JobOffer?.Poste?.Department</span>
+                </p>
+                <p class="mono mt-2 mb-0" style="font-size: 0.8rem;">
+                    @Model.JobOffer?.ContractType
+                </p>
+            </div>
+            <div class="col-md-4">
+                <span class="label text-muted">Détails</span>
+                <table class="table table-sm mt-2 mb-0">
+                    <tr>
+                        <td class="mono" style="font-size: 0.75rem; border: none; padding: 0.25rem 0;">Candidature:</td>
+                        <td class="mono" style="font-size: 0.75rem; border: none; padding: 0.25rem 0;">@Model.DateCandidature.ToString("dd.MM.yyyy")</td>
+                    </tr>
+                    @if (Model.PretentionSalariale.HasValue)
+                    {
+                        <tr>
+                            <td class="mono" style="font-size: 0.75rem; border: none; padding: 0.25rem 0;">Prétention:</td>
+                            <td class="mono" style="font-size: 0.75rem; border: none; padding: 0.25rem 0;">@Model.PretentionSalariale.Value.ToString("N0") EUR</td>
+                        </tr>
+                    }
+                    @if (Model.Score.HasValue)
+                    {
+                        <tr>
+                            <td class="mono" style="font-size: 0.75rem; border: none; padding: 0.25rem 0;">Score:</td>
+                            <td class="mono" style="font-size: 0.75rem; border: none; padding: 0.25rem 0;">@Model.Score/100</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pipeline Progress -->
+<div class="card mb-4">
+    <div class="card-header">
+        Progression du Recrutement
+    </div>
+    <div class="card-body py-4">
+        <div class="d-flex justify-content-between align-items-start position-relative">
+            <!-- Progress Line -->
+            <div class="position-absolute" style="top: 24px; left: 10%; right: 10%; height: 2px; background: var(--newsprint-muted); z-index: 0;"></div>
+            <div class="position-absolute" style="top: 24px; left: 10%; height: 2px; background: var(--newsprint-fg); z-index: 1; width: @((currentStageIndex) * 20)%;"></div>
+            
+            @for (int i = 0; i < stages.Length; i++)
+            {
+                var stage = stages[i];
+                var isCompleted = i < currentStageIndex;
+                var isCurrent = i == currentStageIndex;
+                var isPending = i > currentStageIndex;
+                
+                <div class="text-center position-relative" style="z-index: 2; width: 18%;">
+                    <div class="d-flex align-items-center justify-content-center mx-auto" 
+                         style="width: 48px; height: 48px; border: 2px solid var(--newsprint-fg); 
+                                background: @(isCompleted || isCurrent ? "var(--newsprint-fg)" : "var(--newsprint-bg)"); 
+                                color: @(isCompleted || isCurrent ? "var(--newsprint-bg)" : "var(--newsprint-fg)");
+                                @(isCurrent ? "box-shadow: 4px 4px 0px 0px var(--newsprint-fg);" : "")">
+                        @if (isCompleted)
+                        {
+                            <span style="font-size: 1.25rem; font-weight: bold;">&#10003;</span>
+                        }
+                        else
+                        {
+                            <span class="mono" style="font-size: 1rem; font-weight: bold;">@(i + 1)</span>
+                        }
+                    </div>
+                    <p class="mt-2 mb-0 @(isCurrent ? "fw-bold" : "")" style="font-family: var(--font-sans); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                        @stage.Label
+                    </p>
+                    <small class="d-none d-md-block" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neutral-500);">
+                        @stage.Description
+                    </small>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Action Cards Based on Current Status -->
+<div class="row g-4">
+    @if (Model.Status == ERP.Models.CandidatureStatus.Accepted)
+    {
+        <!-- Send Offer Form -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    Étape 1: Envoyer une Offre
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">Le candidat a été accepté suite aux entretiens. Préparez et envoyez une offre d'emploi formelle.</p>
+                    
+                    <form asp-action="SendOffer" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="label mb-2">Salaire Proposé (EUR/an)</label>
+                                <input type="number" name="salairePropose" class="form-control" 
+                                       value="@(Model.PretentionSalariale ?? ViewBag.MinimumSalary ?? 30000)" 
+                                       min="0" step="100" required />
+                                @if (ViewBag.MinimumSalary != null)
+                                {
+                                    <small class="mono" style="color: var(--neutral-500);">Min. poste: @(((decimal)ViewBag.MinimumSalary).ToString("N0")) EUR</small>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="label mb-2">Date de Début Prévue</label>
+                                <input type="date" name="dateDebutPrevue" class="form-control" 
+                                       value="@(Model.DateDisponibilite?.ToString("yyyy-MM-dd") ?? DateTime.Now.AddDays(30).ToString("yyyy-MM-dd"))" required />
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            Envoyer l'Offre
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.Status == ERP.Models.CandidatureStatus.OfferSent)
+    {
+        <!-- Waiting for Response -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    Étape 2: En Attente de Réponse
+                </div>
+                <div class="card-body">
+                    <div class="p-3 mb-4" style="background: var(--neutral-100); border-left: 4px solid var(--newsprint-fg);">
+                        <span class="label d-block mb-1">Offre envoyée</span>
+                        <p class="mb-0">
+                            <span class="mono">@(Model.DateOffreSent?.ToString("dd.MM.yyyy") ?? "N/A")</span> &mdash; 
+                            Salaire: <strong>@(Model.SalairePropose?.ToString("N0") ?? "N/A") EUR/an</strong>
+                        </p>
+                    </div>
+                    
+                    <p class="mono mb-4" style="font-size: 0.85rem;">
+                        Date de début prévue: <strong>@(Model.DateDebutPrevue?.ToString("dd.MM.yyyy") ?? "Non définie")</strong>
+                    </p>
+                    
+                    <div class="d-flex gap-3">
+                        <form asp-action="AcceptOffer" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-primary">
+                                Le Candidat Accepte
+                            </button>
+                        </form>
+                        
+                        <form asp-action="DeclineOffer" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-outline-danger">
+                                Le Candidat Refuse
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.Status == ERP.Models.CandidatureStatus.OfferAccepted)
+    {
+        <!-- Start Pre-boarding -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    Étape 3: Offre Acceptée
+                </div>
+                <div class="card-body">
+                    <div class="p-3 mb-4" style="background: var(--neutral-100); border-left: 4px solid var(--newsprint-fg);">
+                        <span class="label d-block mb-1">Confirmation</span>
+                        <p class="mb-0">Le candidat a accepté l'offre de <strong>@(Model.SalairePropose?.ToString("N0") ?? "N/A") EUR/an</strong></p>
+                    </div>
+                    
+                    <p class="mb-2"><strong>Checklist Pré-boarding:</strong></p>
+                    <ul class="mb-4" style="font-family: var(--font-body);">
+                        <li>Préparation du contrat de travail</li>
+                        <li>Collecte des documents administratifs</li>
+                        <li>Attribution du matériel</li>
+                        <li>Création des accès informatiques</li>
+                    </ul>
+                    
+                    <form asp-action="StartPreBoarding" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary">
+                            Démarrer le Pré-boarding
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.Status == ERP.Models.CandidatureStatus.PreBoarding)
+    {
+        <!-- Complete Hiring -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    Étape Finale: Finaliser l'Embauche
+                </div>
+                <div class="card-body">
+                    <div class="p-3 mb-4" style="background: var(--neutral-100); border-left: 4px solid var(--newsprint-fg);">
+                        <span class="label d-block mb-1">Pré-boarding en cours</span>
+                        <p class="mb-0">Vérifiez que tous les documents et accès sont prêts avant de finaliser.</p>
+                    </div>
+                    
+                    <span class="label mb-2 d-block">Récapitulatif</span>
+                    <table class="table table-sm mb-4">
+                        <tr>
+                            <td class="mono" style="width: 40%;">Nom complet:</td>
+                            <td><strong>@Model.Candidat?.Prenom @Model.Candidat?.Nom</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="mono">Poste:</td>
+                            <td>@Model.JobOffer?.Poste?.Title</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">Département:</td>
+                            <td>@Model.JobOffer?.Poste?.Department</td>
+                        </tr>
+                        <tr>
+                            <td class="mono">Salaire annuel:</td>
+                            <td><strong>@(Model.SalairePropose?.ToString("N0") ?? "N/A") EUR</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="mono">Date de début:</td>
+                            <td>@(Model.DateDebutPrevue?.ToString("dd.MM.yyyy") ?? "N/A")</td>
+                        </tr>
+                    </table>
+                    
+                    <form asp-action="CompleteHiring" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir finaliser l\'embauche? Un nouveau profil employé sera créé.');">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Finaliser l'Embauche
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.Status == ERP.Models.CandidatureStatus.Employed)
+    {
+        <!-- Completed -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <div class="mb-3" style="font-size: 3rem; font-family: var(--font-serif);">&#10003;</div>
+                    <h3 class="mb-2">Embauche Complétée</h3>
+                    <p class="lead mb-4">@Model.Candidat?.Prenom @Model.Candidat?.Nom est maintenant membre de l'équipe.</p>
+                    
+                    @if (Model.EmployeId.HasValue)
+                    {
+                        <a asp-controller="Employes" asp-action="Details" asp-route-id="@Model.EmployeId" class="btn btn-primary">
+                            Voir le Profil Employé
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    
+    <!-- Side Info -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                Historique
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="mono" style="font-size: 0.8rem;">Candidature</span>
+                        <span class="mono" style="font-size: 0.8rem;">@Model.DateCandidature.ToString("dd.MM.yyyy")</span>
+                    </li>
+                    @if (Model.DateEntretien.HasValue)
+                    {
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="mono" style="font-size: 0.8rem;">Entretien</span>
+                            <span class="mono" style="font-size: 0.8rem;">@Model.DateEntretien.Value.ToString("dd.MM.yyyy")</span>
+                        </li>
+                    }
+                    @if (Model.DateOffreSent.HasValue)
+                    {
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="mono" style="font-size: 0.8rem;">Offre envoyée</span>
+                            <span class="mono" style="font-size: 0.8rem;">@Model.DateOffreSent.Value.ToString("dd.MM.yyyy")</span>
+                        </li>
+                    }
+                    @if (Model.DateDebutPrevue.HasValue)
+                    {
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="mono" style="font-size: 0.8rem;">Début prévu</span>
+                            <span class="mono" style="font-size: 0.8rem;">@Model.DateDebutPrevue.Value.ToString("dd.MM.yyyy")</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        
+        @if (!string.IsNullOrEmpty(Model.NotesInternes))
+        {
+            <div class="card">
+                <div class="card-header">
+                    Notes Internes
+                </div>
+                <div class="card-body">
+                    <p class="mb-0" style="font-family: var(--font-body); font-size: 0.9rem;">@Model.NotesInternes</p>
+                </div>
+            </div>
+        }
+        
+        @if (!string.IsNullOrEmpty(Model.RetourEntretien))
+        {
+            <div class="card mt-4">
+                <div class="card-header">
+                    Retour d'Entretien
+                </div>
+                <div class="card-body">
+                    <p class="mb-0" style="font-family: var(--font-body); font-size: 0.9rem;">@Model.RetourEntretien</p>
+                </div>
+            </div>
+        }
+        
+        <div class="mt-4">
+            <a asp-action="Candidatures" class="btn btn-secondary w-100">
+                Retour aux Candidatures
+            </a>
+        </div>
+    </div>
+</div>

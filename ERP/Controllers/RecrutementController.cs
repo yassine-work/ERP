@@ -426,10 +426,194 @@ namespace ERP.Controllers
             if (candidature == null) return NotFound();
 
             candidature.Status = status;
+            
+            // Track when offer is sent
+            if (status == CandidatureStatus.OfferSent && !candidature.DateOffreSent.HasValue)
+            {
+                candidature.DateOffreSent = DateTime.Now;
+            }
+            
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Statut mis à jour avec succès!";
             return RedirectToAction(nameof(Candidatures));
+        }
+        
+        // GET: Recrutement/HiringPipeline/5 - View hiring process for accepted candidate
+        public async Task<IActionResult> HiringPipeline(int? id)
+        {
+            if (id == null) return NotFound();
+            
+            var candidature = await _context.Candidatures
+                .Include(c => c.Candidat)
+                .Include(c => c.JobOffer)
+                    .ThenInclude(j => j!.Poste)
+                .FirstOrDefaultAsync(c => c.Id == id);
+                
+            if (candidature == null) return NotFound();
+            
+            // Get the minimum salary from the position for reference
+            if (candidature.JobOffer?.Poste != null)
+            {
+                ViewBag.MinimumSalary = candidature.JobOffer.Poste.MinimumBaseSalary;
+            }
+            
+            return View(candidature);
+        }
+        
+        // POST: Recrutement/SendOffer/5 - Send job offer to candidate
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendOffer(int id, decimal salairePropose, DateTime dateDebutPrevue)
+        {
+            var candidature = await _context.Candidatures.FindAsync(id);
+            if (candidature == null) return NotFound();
+            
+            if (candidature.Status != CandidatureStatus.Accepted)
+            {
+                TempData["Error"] = "Le candidat doit d'abord être accepté avant d'envoyer une offre.";
+                return RedirectToAction(nameof(HiringPipeline), new { id });
+            }
+            
+            candidature.Status = CandidatureStatus.OfferSent;
+            candidature.SalairePropose = salairePropose;
+            candidature.DateDebutPrevue = dateDebutPrevue;
+            candidature.DateOffreSent = DateTime.Now;
+            
+            await _context.SaveChangesAsync();
+            
+            TempData["Success"] = "Offre envoyée au candidat avec succès!";
+            return RedirectToAction(nameof(HiringPipeline), new { id });
+        }
+        
+        // POST: Recrutement/AcceptOffer/5 - Candidate accepts the offer
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AcceptOffer(int id)
+        {
+            var candidature = await _context.Candidatures.FindAsync(id);
+            if (candidature == null) return NotFound();
+            
+            if (candidature.Status != CandidatureStatus.OfferSent)
+            {
+                TempData["Error"] = "Une offre doit d'abord être envoyée.";
+                return RedirectToAction(nameof(HiringPipeline), new { id });
+            }
+            
+            candidature.Status = CandidatureStatus.OfferAccepted;
+            await _context.SaveChangesAsync();
+            
+            TempData["Success"] = "Le candidat a accepté l'offre! Passage en pré-boarding.";
+            return RedirectToAction(nameof(HiringPipeline), new { id });
+        }
+        
+        // POST: Recrutement/DeclineOffer/5 - Candidate declines the offer
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeclineOffer(int id)
+        {
+            var candidature = await _context.Candidatures.FindAsync(id);
+            if (candidature == null) return NotFound();
+            
+            candidature.Status = CandidatureStatus.OfferDeclined;
+            await _context.SaveChangesAsync();
+            
+            TempData["Warning"] = "Le candidat a refusé l'offre.";
+            return RedirectToAction(nameof(Candidatures));
+        }
+        
+        // POST: Recrutement/StartPreBoarding/5 - Start pre-boarding process
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StartPreBoarding(int id)
+        {
+            var candidature = await _context.Candidatures.FindAsync(id);
+            if (candidature == null) return NotFound();
+            
+            if (candidature.Status != CandidatureStatus.OfferAccepted)
+            {
+                TempData["Error"] = "Le candidat doit d'abord accepter l'offre.";
+                return RedirectToAction(nameof(HiringPipeline), new { id });
+            }
+            
+            candidature.Status = CandidatureStatus.PreBoarding;
+            await _context.SaveChangesAsync();
+            
+            TempData["Success"] = "Pré-boarding démarré! Préparation des documents et équipements.";
+            return RedirectToAction(nameof(HiringPipeline), new { id });
+        }
+        
+        // POST: Recrutement/CompleteHiring/5 - Convert candidate to employee
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteHiring(int id)
+        {
+            var candidature = await _context.Candidatures
+                .Include(c => c.Candidat)
+                .Include(c => c.JobOffer)
+                .FirstOrDefaultAsync(c => c.Id == id);
+                
+            if (candidature == null) return NotFound();
+            
+            if (candidature.Status != CandidatureStatus.PreBoarding)
+            {
+                TempData["Error"] = "Le candidat doit d'abord passer par le pré-boarding.";
+                return RedirectToAction(nameof(HiringPipeline), new { id });
+            }
+            
+            if (candidature.Candidat == null || candidature.JobOffer == null)
+            {
+                TempData["Error"] = "Données du candidat ou de l'offre manquantes.";
+                return RedirectToAction(nameof(HiringPipeline), new { id });
+            }
+            
+            // Generate unique matricule
+            var lastEmployee = await _context.Employes.OrderByDescending(e => e.Id).FirstOrDefaultAsync();
+            var nextNumber = (lastEmployee?.Id ?? 0) + 1;
+            var matricule = $"EMP{nextNumber:D3}";
+            
+            // Create new employee from candidate
+            var newEmployee = new Employe
+            {
+                Matricule = matricule,
+                Nom = candidature.Candidat.Nom,
+                Prenom = candidature.Candidat.Prenom,
+                Email = candidature.Candidat.Email,
+                Telephone = candidature.Candidat.Telephone ?? "",
+                Adresse = candidature.Candidat.Adresse ?? "",
+                Ville = candidature.Candidat.Ville,
+                DateNaissance = candidature.Candidat.DateNaissance ?? DateTime.Now.AddYears(-25),
+                PosteId = candidature.JobOffer.PosteId ?? 1, // Default to first poste if not specified
+                DateEmbauche = candidature.DateDebutPrevue ?? DateTime.Now,
+                TypeContrat = candidature.JobOffer.ContractType.ToString(),
+                Status = EmployeeStatus.Active,
+                Notes = $"Recruté via candidature #{candidature.Id} pour l'offre: {candidature.JobOffer.Title}"
+            };
+            
+            _context.Employes.Add(newEmployee);
+            await _context.SaveChangesAsync();
+            
+            // Update candidature status and link to employee
+            candidature.Status = CandidatureStatus.Employed;
+            candidature.EmployeId = newEmployee.Id;
+            await _context.SaveChangesAsync();
+            
+            // Create initial compensation package if salary was proposed
+            if (candidature.SalairePropose.HasValue)
+            {
+                var compensationPackage = new CompensationPackage
+                {
+                    EmployeeId = newEmployee.Id,
+                    BaseSalary = candidature.SalairePropose.Value,
+                    EffectiveFrom = candidature.DateDebutPrevue ?? DateTime.Now,
+                    IsActive = true
+                };
+                _context.CompensationPackages.Add(compensationPackage);
+                await _context.SaveChangesAsync();
+            }
+            
+            TempData["Success"] = $" Félicitations! {newEmployee.Prenom} {newEmployee.Nom} est maintenant employé(e) avec le matricule {matricule}!";
+            return RedirectToAction("Details", "Employes", new { id = newEmployee.Id });
         }
 
         // POST: Recrutement/DeleteCandidature/5

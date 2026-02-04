@@ -34,11 +34,22 @@
                 <label class="form-label">Filtrer par statut</label>
                 <select name="status" class="form-select">
                     <option value="">Tous les statuts</option>
-                    <option value="Submitted" selected="@(Context.Request.Query["status"] == "Submitted")">Soumise</option>
-                    <option value="UnderReview" selected="@(Context.Request.Query["status"] == "UnderReview")">En examen</option>
-                    <option value="Interview" selected="@(Context.Request.Query["status"] == "Interview")">Entretien</option>
-                    <option value="Accepted" selected="@(Context.Request.Query["status"] == "Accepted")">Acceptée</option>
-                    <option value="Rejected" selected="@(Context.Request.Query["status"] == "Rejected")">Rejetée</option>
+                    <optgroup label="Candidature">
+                        <option value="Submitted" selected="@(Context.Request.Query["status"] == "Submitted")">Soumise</option>
+                        <option value="UnderReview" selected="@(Context.Request.Query["status"] == "UnderReview")">En examen</option>
+                        <option value="Interview" selected="@(Context.Request.Query["status"] == "Interview")">Entretien</option>
+                    </optgroup>
+                    <optgroup label="Décision">
+                        <option value="Accepted" selected="@(Context.Request.Query["status"] == "Accepted")">Acceptée</option>
+                        <option value="Rejected" selected="@(Context.Request.Query["status"] == "Rejected")">Rejetée</option>
+                        <option value="Withdrawn" selected="@(Context.Request.Query["status"] == "Withdrawn")">Retirée</option>
+                    </optgroup>
+                    <optgroup label="Embauche">
+                        <option value="OfferSent" selected="@(Context.Request.Query["status"] == "OfferSent")">Offre envoyée</option>
+                        <option value="OfferAccepted" selected="@(Context.Request.Query["status"] == "OfferAccepted")">Offre acceptée</option>
+                        <option value="PreBoarding" selected="@(Context.Request.Query["status"] == "PreBoarding")">Pré-boarding</option>
+                        <option value="Employed" selected="@(Context.Request.Query["status"] == "Employed")">Embauché</option>
+                    </optgroup>
                 </select>
             </div>
             <div class="col-md-4">
@@ -86,6 +97,12 @@
                                     ERP.Models.CandidatureStatus.Accepted => "bg-success",
                                     ERP.Models.CandidatureStatus.Rejected => "bg-danger",
                                     ERP.Models.CandidatureStatus.Interview => "bg-info",
+                                    ERP.Models.CandidatureStatus.OfferSent => "bg-primary",
+                                    ERP.Models.CandidatureStatus.OfferAccepted => "bg-primary",
+                                    ERP.Models.CandidatureStatus.OfferDeclined => "bg-danger",
+                                    ERP.Models.CandidatureStatus.PreBoarding => "bg-warning text-dark",
+                                    ERP.Models.CandidatureStatus.Employed => "bg-success",
+                                    ERP.Models.CandidatureStatus.Withdrawn => "bg-secondary",
                                     _ => "bg-warning text-dark"
                                 };
                                 var statusText = item.Status switch
@@ -96,13 +113,36 @@
                                     ERP.Models.CandidatureStatus.Accepted => "Acceptée",
                                     ERP.Models.CandidatureStatus.Rejected => "Rejetée",
                                     ERP.Models.CandidatureStatus.Withdrawn => "Retirée",
-                                    _ => ""
+                                    ERP.Models.CandidatureStatus.OfferSent => "Offre envoyée",
+                                    ERP.Models.CandidatureStatus.OfferAccepted => "Offre acceptée",
+                                    ERP.Models.CandidatureStatus.OfferDeclined => "Offre refusée",
+                                    ERP.Models.CandidatureStatus.PreBoarding => "Pré-boarding",
+                                    ERP.Models.CandidatureStatus.Employed => "✓ Embauché",
+                                    _ => item.Status.ToString()
                                 };
                             }
                             <span class="badge @statusClass">@statusText</span>
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
+                                @* Show Hiring Pipeline button for accepted candidates *@
+                                @if (item.Status >= ERP.Models.CandidatureStatus.Accepted && 
+                                     item.Status != ERP.Models.CandidatureStatus.Rejected &&
+                                     item.Status != ERP.Models.CandidatureStatus.Withdrawn &&
+                                     item.Status != ERP.Models.CandidatureStatus.OfferDeclined)
+                                {
+                                    <a asp-action="HiringPipeline" asp-route-id="@item.Id" class="btn btn-success" title="Pipeline d'embauche">
+                                        <i class="bi bi-diagram-3"></i>
+                                        @if (item.Status == ERP.Models.CandidatureStatus.Employed)
+                                        {
+                                            <span class="d-none d-lg-inline ms-1">Voir</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="d-none d-lg-inline ms-1">Embaucher</span>
+                                        }
+                                    </a>
+                                }
                                 <a asp-action="EditCandidature" asp-route-id="@item.Id" class="btn btn-outline-secondary" title="Gérer">
                                     <i class="bi bi-pencil"></i>
                                 </a>

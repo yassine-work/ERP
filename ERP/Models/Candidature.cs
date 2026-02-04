@@ -6,12 +6,22 @@ namespace ERP.Models
 {
     public enum CandidatureStatus
     {
+        // Initial stages
         Submitted,      // Soumise
         UnderReview,    // En cours d'examen
-        Interview,      // Entretien
-        Accepted,       // Acceptée
+        Interview,      // Entretien planifié
+        
+        // Decision stages
+        Accepted,       // Acceptée (passé les entretiens)
         Rejected,       // Rejetée
-        Withdrawn       // Retirée
+        Withdrawn,      // Retirée par le candidat
+        
+        // Hiring pipeline (after acceptance)
+        OfferSent,      // Offre envoyée
+        OfferAccepted,  // Offre acceptée par le candidat
+        OfferDeclined,  // Offre refusée par le candidat
+        PreBoarding,    // En cours d'intégration (paperasse, etc.)
+        Employed        // Embauché → devient employé
     }
 
     public class Candidature
@@ -63,5 +73,24 @@ namespace ERP.Models
         [Display(Name = "Score/Évaluation")]
         [Range(0, 100)]
         public int? Score { get; set; }
+        
+        // Hiring pipeline fields
+        [Display(Name = "Date d'envoi de l'offre")]
+        [DataType(DataType.Date)]
+        public DateTime? DateOffreSent { get; set; }
+        
+        [Display(Name = "Salaire proposé")]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? SalairePropose { get; set; }
+        
+        [Display(Name = "Date de début prévue")]
+        [DataType(DataType.Date)]
+        public DateTime? DateDebutPrevue { get; set; }
+        
+        [Display(Name = "ID Employé créé")]
+        public int? EmployeId { get; set; }
+        
+        [ForeignKey("EmployeId")]
+        public virtual Employe? Employe { get; set; }
     }
 }
