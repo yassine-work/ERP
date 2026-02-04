@@ -1,4 +1,10 @@
 <p align="center">
+  <a href="https://erp-y94u.onrender.com/">
+    <img src="https://img.shields.io/badge/Live_Demo-Visit_Application-success?style=for-the-badge&logo=render&logoColor=white" alt="Live Demo"/>
+  </a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 9.0"/>
   <img src="https://img.shields.io/badge/ASP.NET_Core-MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="ASP.NET Core MVC"/>
   <img src="https://img.shields.io/badge/Entity_Framework-Core_9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="EF Core"/>
@@ -11,12 +17,6 @@
 # ERP - Human Resources Management System
 
 A comprehensive Enterprise Resource Planning (ERP) solution focused on Human Resources management, built with modern .NET technologies. This application provides a complete suite of HR modules including employee management, recruitment, payroll, equipment tracking, and compensation management.
-
-<p align="center">
-  <a href="https://erp-y94u.onrender.com/">
-    <img src="https://img.shields.io/badge/Live_Demo-Visit_Application-success?style=for-the-badge&logo=render&logoColor=white" alt="Live Demo"/>
-  </a>
-</p>
 
 ---
 
@@ -175,14 +175,6 @@ docker run -p 8080:8080 erp-system
 |----------|-------------|---------|
 | `ASPNETCORE_ENVIRONMENT` | Runtime environment | Production |
 | `PORT` | Application port | 8080 |
-
----
-
-## Live Demo
-
-The application is deployed and accessible at:
-
-**[https://erp-y94u.onrender.com/](https://erp-y94u.onrender.com/)**
 
 ---
 
