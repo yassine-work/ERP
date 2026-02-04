@@ -3,12 +3,11 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy project file and restore dependencies
-COPY ERP/ERP.csproj ./ERP/
-RUN dotnet restore ./ERP/ERP.csproj
+COPY ERP.csproj ./
+RUN dotnet restore ./ERP.csproj
 
 # Copy everything and build
 COPY . .
-WORKDIR /src/ERP
 RUN dotnet publish -c Release -o /app/publish
 
 # Runtime stage
