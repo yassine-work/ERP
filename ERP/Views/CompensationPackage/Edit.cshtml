@@ -111,15 +111,15 @@
 
 <div class="col-md-1 d-flex align-items-center">
 <input type="hidden" name="Allowances[@aIndex].IsRecurring" value="false" />
-@if (a.IsRecurring) { <input type="checkbox" name="Allowances[@aIndex].IsRecurring" checked /> }
-else { <input type="checkbox" name="Allowances[@aIndex].IsRecurring" /> }
+@if (a.IsRecurring) { <input type="checkbox" name="Allowances[@aIndex].IsRecurring" value="true" checked /> }
+else { <input type="checkbox" name="Allowances[@aIndex].IsRecurring" value="true" /> }
 <label class="ms-1">Réc.</label>
 </div>
 
 <div class="col-md-1 d-flex align-items-center">
 <input type="hidden" name="Allowances[@aIndex].IsTaxable" value="false" />
-@if (a.IsTaxable) { <input type="checkbox" name="Allowances[@aIndex].IsTaxable" checked /> }
-else { <input type="checkbox" name="Allowances[@aIndex].IsTaxable" /> }
+@if (a.IsTaxable) { <input type="checkbox" name="Allowances[@aIndex].IsTaxable" value="true" checked /> }
+else { <input type="checkbox" name="Allowances[@aIndex].IsTaxable" value="true" /> }
 <label class="ms-1">Imp.</label>
 </div>
 
@@ -173,8 +173,8 @@ aIndex++;
 <small class="text-muted">Type de prime à attribuer.</small>
 <div class="form-check mt-2">
 <input type="hidden" name="Bonuses[@bIndex].IsPerformanceBased" value="false" />
-@if (b.IsPerformanceBased){<input class="form-check-input" type="checkbox" name="Bonuses[@bIndex].IsPerformanceBased" checked/>}
-else{<input class="form-check-input" type="checkbox" name="Bonuses[@bIndex].IsPerformanceBased"/>}
+@if (b.IsPerformanceBased){<input class="form-check-input" type="checkbox" name="Bonuses[@bIndex].IsPerformanceBased" value="true" checked/>}
+else{<input class="form-check-input" type="checkbox" name="Bonuses[@bIndex].IsPerformanceBased" value="true"/>}
 <label class="form-check-label">Basée sur performance</label>
 </div>
 </div>
@@ -198,11 +198,11 @@ else{<input class="form-check-input" type="checkbox" name="Bonuses[@bIndex].IsPe
 
 <div class="col-md-3 d-flex align-items-center gap-3">
 <input type="hidden" name="Bonuses[@bIndex].IsAutomatic" value="false" />
-<label>@if (b.IsAutomatic){<input type="checkbox" name="Bonuses[@bIndex].IsAutomatic" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsAutomatic"/>} Automatique</label>
+<label>@if (b.IsAutomatic){<input type="checkbox" name="Bonuses[@bIndex].IsAutomatic" value="true" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsAutomatic" value="true"/>} Automatique</label>
 <input type="hidden" name="Bonuses[@bIndex].IsTaxable" value="false" />
-<label>@if (b.IsTaxable){<input type="checkbox" name="Bonuses[@bIndex].IsTaxable" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsTaxable"/>} Imposable</label>
+<label>@if (b.IsTaxable){<input type="checkbox" name="Bonuses[@bIndex].IsTaxable" value="true" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsTaxable" value="true"/>} Imposable</label>
 <input type="hidden" name="Bonuses[@bIndex].IsExceptional" value="false" />
-<label>@if (b.IsExceptional){<input type="checkbox" name="Bonuses[@bIndex].IsExceptional" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsExceptional"/>} Exceptionnelle</label>
+<label>@if (b.IsExceptional){<input type="checkbox" name="Bonuses[@bIndex].IsExceptional" value="true" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsExceptional" value="true"/>} Exceptionnelle</label>
 </div>
 </div>
 
@@ -273,8 +273,8 @@ bIndex++;
 
 <div class="col-md-2 d-flex align-items-center">
 <input type="hidden" name="Advantages[@vIndex].IsActive" value="false" />
-@if (v.IsActive){<input type="checkbox" name="Advantages[@vIndex].IsActive" checked/>}
-else{<input type="checkbox" name="Advantages[@vIndex].IsActive"/>}
+@if (v.IsActive){<input type="checkbox" name="Advantages[@vIndex].IsActive" value="true" checked/>}
+else{<input type="checkbox" name="Advantages[@vIndex].IsActive" value="true"/>}
 <label class="ms-1">Actif</label>
 </div>
 
@@ -348,8 +348,8 @@ document.getElementById("allowancesContainer").insertAdjacentHTML("beforeend",`
 <option value="Yearly">Annuel</option><option value="OneTime">Ponctuel</option></select><small class="text-muted">Rythme d'application.</small></div>
 <div class="col-md-2"><input type="date" name="Allowances[${aIndex}].EffectiveFrom" class="form-control"/><small class="text-muted">Début de l'indemnité.</small></div>
 <div class="col-md-2"><input type="date" name="Allowances[${aIndex}].EffectiveTo" class="form-control"/><small class="text-muted">Fin (optionnel).</small></div>
-<div class="col-md-1"><input type="hidden" name="Allowances[${aIndex}].IsRecurring" value="false"/><input type="checkbox" name="Allowances[${aIndex}].IsRecurring"/><small class="text-muted">Récurrent</small></div>
-<div class="col-md-1"><input type="hidden" name="Allowances[${aIndex}].IsTaxable" value="false"/><input type="checkbox" name="Allowances[${aIndex}].IsTaxable"/><small class="text-muted">Imposable</small></div>
+<div class="col-md-1"><input type="hidden" name="Allowances[${aIndex}].IsRecurring" value="false"/><input type="checkbox" name="Allowances[${aIndex}].IsRecurring" value="true"/><small class="text-muted">Récurrent</small></div>
+<div class="col-md-1"><input type="hidden" name="Allowances[${aIndex}].IsTaxable" value="false"/><input type="checkbox" name="Allowances[${aIndex}].IsTaxable" value="true"/><small class="text-muted">Imposable</small></div>
 </div></div></div>`);
 aIndex++;
  renumber('#allowancesContainer','Allowances');
@@ -368,9 +368,9 @@ document.getElementById("bonusesContainer").insertAdjacentHTML("beforeend",`
 <div class="col-md-2"><input type="date" name="Bonuses[${bIndex}].AwardedOn" class="form-control"/><small class="text-muted">Date de versement.</small></div>
 <div class="col-md-2"><input type="date" name="Bonuses[${bIndex}].ValidUntil" class="form-control"/><small class="text-muted">Fin de validité.</small></div>
 <div class="col-md-3 d-flex gap-3">
-<input type="hidden" name="Bonuses[${bIndex}].IsAutomatic" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsAutomatic"/> Automatique</label>
-<input type="hidden" name="Bonuses[${bIndex}].IsTaxable" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsTaxable"/> Imposable</label>
-<input type="hidden" name="Bonuses[${bIndex}].IsExceptional" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsExceptional"/> Exceptionnelle</label>
+<input type="hidden" name="Bonuses[${bIndex}].IsAutomatic" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsAutomatic" value="true"/> Automatique</label>
+<input type="hidden" name="Bonuses[${bIndex}].IsTaxable" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsTaxable" value="true"/> Imposable</label>
+<input type="hidden" name="Bonuses[${bIndex}].IsExceptional" value="false"/><label><input type="checkbox" name="Bonuses[${bIndex}].IsExceptional" value="true"/> Exceptionnelle</label>
 </div>
 </div></div></div>`);
 bIndex++;
@@ -388,7 +388,7 @@ document.getElementById("advantagesContainer").insertAdjacentHTML("beforeend",`
 <div class="col-md-2"><input type="number" name="Advantages[${vIndex}].Value" class="form-control" step="0.01"/><small class="text-muted">Valeur attribuée.</small></div>
 <div class="col-md-2"><input type="date" name="Advantages[${vIndex}].StartDate" class="form-control"/><small class="text-muted">Date de début.</small></div>
 <div class="col-md-2"><input type="date" name="Advantages[${vIndex}].EndDate" class="form-control"/><small class="text-muted">Fin optionnelle.</small></div>
-<div class="col-md-2"><input type="hidden" name="Advantages[${vIndex}].IsActive" value="false"/><input type="checkbox" name="Advantages[${vIndex}].IsActive"/> Actif</div>
+<div class="col-md-2"><input type="hidden" name="Advantages[${vIndex}].IsActive" value="false"/><input type="checkbox" name="Advantages[${vIndex}].IsActive" value="true"/> Actif</div>
 </div></div></div>`);
 vIndex++;
  renumber('#advantagesContainer','Advantages');

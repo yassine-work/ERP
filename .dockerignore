@@ -1,0 +1,16 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/node_modules/
+*.db
+*.db-shm
+*.db-wal
+*.user
+*.suo
+.git/
+Dockerfile*
+docker-compose*
+render.yaml
+README.md
+*.md

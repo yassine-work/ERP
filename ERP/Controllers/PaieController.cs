@@ -44,9 +44,10 @@ namespace ERP.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            var searchTerm = employeeName.ToLower();
             var employees = await _context.Employes
                 .Include(e => e.Poste)
-                .Where(e => e.Nom.Contains(employeeName) || e.Prenom.Contains(employeeName))
+                .Where(e => e.Nom.ToLower().Contains(searchTerm) || e.Prenom.ToLower().Contains(searchTerm))
                 .ToListAsync();
 
             if (!employees.Any())

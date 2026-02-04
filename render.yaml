@@ -1,0 +1,17 @@
+# Render.com deployment configuration
+# Commit this file to your repo, then connect Render to GitHub
+
+services:
+  - type: web
+    name: erp-system-demo
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: PORT
+        value: 10000
+    healthCheckPath: /
+    autoDeploy: true

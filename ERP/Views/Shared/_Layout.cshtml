@@ -7,8 +7,54 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"/>
     <link rel="stylesheet" href="~/css/newsprint.css" asp-append-version="true"/>
+    <style>
+        .sandbox-banner {
+            background: var(--newsprint-fg, #111111);
+            color: var(--newsprint-bg, #F9F9F7);
+            padding: 8px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            font-family: var(--font-sans, 'Inter', sans-serif);
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 1100;
+            border-bottom: 2px solid var(--newsprint-fg, #111111);
+        }
+        .sandbox-banner i { margin-right: 6px; }
+        .sandbox-timer {
+            background: var(--newsprint-accent, #CC0000);
+            color: var(--newsprint-bg, #F9F9F7);
+            padding: 2px 10px;
+            border-radius: 0;
+            margin-left: 10px;
+            font-weight: 600;
+            font-family: var(--font-mono, 'JetBrains Mono', monospace);
+        }
+        body { padding-top: 0 !important; }
+    </style>
 </head>
 <body>
+
+<!-- Sandbox Mode Banner -->
+@{
+    var timeRemaining = Context.Items["SandboxTimeRemaining"] as TimeSpan?;
+    var remainingSeconds = timeRemaining.HasValue ? (int)timeRemaining.Value.TotalSeconds : 1200;
+    var sessionId = Context.Items["SandboxSessionId"] as string ?? "unknown";
+    var shortSessionId = sessionId.Length > 12 ? sessionId.Substring(sessionId.Length - 8) : sessionId;
+}
+<div class="sandbox-banner">
+    <i class="bi bi-flask"></i>
+    <strong>Mode Démo</strong> — Vos modifications sont temporaires et isolées.
+    <span class="sandbox-timer" id="sandboxTimer" title="Session: @shortSessionId">
+        <i class="bi bi-clock"></i> <span id="timerDisplay">--:--</span>
+    </span>
+</div>
+<script>
+    // Server-provided remaining seconds (synced on every page load)
+    window.sandboxRemainingSeconds = @remainingSeconds;
+    window.sandboxSessionId = "@shortSessionId";
+</script>
 
 <header>
     <nav class="navbar navbar-expand-lg">
@@ -105,6 +151,63 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+
+<!-- Sandbox Timer Script -->
+<script>
+(function() {
+    // Use server-provided remaining time (synced on every page load)
+    let totalSeconds = window.sandboxRemainingSeconds || 1200;
+    const sessionId = window.sandboxSessionId || 'unknown';
+    
+    // Store session info in localStorage to detect session changes
+    const storedSession = localStorage.getItem('currentSandboxSession');
+    if (storedSession && storedSession !== sessionId) {
+        console.log('[Sandbox] Session changed from', storedSession, 'to', sessionId);
+    }
+    localStorage.setItem('currentSandboxSession', sessionId);
+    
+    console.log('[Sandbox] Timer initialized: ' + totalSeconds + 's remaining, session: ' + sessionId);
+    
+    function updateTimer() {
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerContainer = document.querySelector('.sandbox-timer');
+        
+        if (!timerDisplay || !timerContainer) return;
+        
+        if (totalSeconds <= 0) {
+            timerDisplay.textContent = 'Session expirée';
+            timerContainer.style.background = '#dc3545';
+            localStorage.removeItem('currentSandboxSession');
+            // Reload to get new session
+            setTimeout(() => location.reload(), 2000);
+            return;
+        }
+        
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        timerDisplay.textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Warning colors
+        if (totalSeconds < 60) {
+            timerContainer.style.background = '#dc3545';
+        } else if (totalSeconds < 300) {
+            timerContainer.style.background = '#fd7e14';
+        }
+        
+        totalSeconds--;
+        setTimeout(updateTimer, 1000);
+    }
+    
+    // Start timer when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateTimer);
+    } else {
+        updateTimer();
+    }
+})();
+</script>
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
