@@ -6,13 +6,13 @@
 }
 
 <!-- Page Header -->
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
     <div>
         <span class="label">Gestion du Matériel</span>
         <h1 class="mt-2">Inventaire des Équipements</h1>
         <p class="mono">@Model.Count() équipement(s) répertorié(s)</p>
     </div>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap">
         <a asp-action="Create" class="btn btn-primary">+ Nouvel équipement</a>
         <a asp-controller="EquipmentType" asp-action="Index" class="btn btn-secondary">Types</a>
         <a asp-controller="EquipmentAssignment" asp-action="Index" class="btn btn-secondary">Historique</a>

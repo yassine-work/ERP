@@ -61,8 +61,8 @@
 <button type="button" class="btn btn-outline-danger btn-sm remove-allowance">Supprimer</button>
 </div>
 
-<div class="row">
-<div class="col-md-3">
+<div class="row g-2 g-md-3">
+<div class="col-6 col-md-3">
 <label>Type</label>
 <select name="Allowances[@aIndex].AllowanceTypeId" class="form-select" required onchange="handleTypeChange(this, 'AllowanceType')">
 <option value="">-- Sélectionner --</option>
@@ -78,13 +78,13 @@
 <small class="text-muted">Choisissez la catégorie d'indemnité.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <label>Montant</label>
 <input type="number" name="Allowances[@aIndex].Amount" class="form-control" step="0.01" value="@a.Amount" />
 <small class="text-muted">Montant versé par occurrence.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <label>Fréquence</label>
 <select name="Allowances[@aIndex].Frequency" class="form-select">
 @if (a.Frequency == "Monthly") { <option value="Monthly" selected>Mensuel</option> } else { <option value="Monthly">Mensuel</option> }
@@ -95,28 +95,28 @@
 <small class="text-muted">Rythme d'application de l'indemnité.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <label>Début</label>
 <input type="date" name="Allowances[@aIndex].EffectiveFrom" class="form-control"
        value="@a.EffectiveFrom.ToString("yyyy-MM-dd")" />
 <small class="text-muted">Date de démarrage de l'indemnité.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <label>Fin</label>
 <input type="date" name="Allowances[@aIndex].EffectiveTo" class="form-control"
        value="@(a.EffectiveTo?.ToString("yyyy-MM-dd") ?? "")" />
 <small class="text-muted">Laissez vide si sans fin prévue.</small>
 </div>
 
-<div class="col-md-1 d-flex align-items-center">
+<div class="col-6 col-md-2 d-flex align-items-center">
 <input type="hidden" name="Allowances[@aIndex].IsRecurring" value="false" />
 @if (a.IsRecurring) { <input type="checkbox" name="Allowances[@aIndex].IsRecurring" value="true" checked /> }
 else { <input type="checkbox" name="Allowances[@aIndex].IsRecurring" value="true" /> }
-<label class="ms-1">Réc.</label>
+<label class="ms-1">Récurrent</label>
 </div>
 
-<div class="col-md-1 d-flex align-items-center">
+<div class="col-6 col-md-2 d-flex align-items-center">
 <input type="hidden" name="Allowances[@aIndex].IsTaxable" value="false" />
 @if (a.IsTaxable) { <input type="checkbox" name="Allowances[@aIndex].IsTaxable" value="true" checked /> }
 else { <input type="checkbox" name="Allowances[@aIndex].IsTaxable" value="true" /> }
@@ -157,8 +157,8 @@ aIndex++;
 <button type="button" class="btn btn-outline-danger btn-sm remove-bonus">Supprimer</button>
 </div>
 
-<div class="row">
-<div class="col-md-3">
+<div class="row g-2 g-md-3">
+<div class="col-12 col-md-3">
 <select name="Bonuses[@bIndex].BonusTypeId" class="form-select" onchange="handleTypeChange(this, 'BonusType')">
 <option value="">-- Sélectionner --</option>
 @foreach (var t in bonusTypes)
@@ -179,24 +179,24 @@ else{<input class="form-check-input" type="checkbox" name="Bonuses[@bIndex].IsPe
 </div>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <input type="number" name="Bonuses[@bIndex].Amount" class="form-control" step="0.01" value="@b.Amount"/>
 <small class="text-muted">Montant de la prime.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <input type="date" name="Bonuses[@bIndex].AwardedOn" class="form-control"
        value="@b.AwardedOn.ToString("yyyy-MM-dd")"/>
 <small class="text-muted">Date de versement prévue.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <input type="date" name="Bonuses[@bIndex].ValidUntil" class="form-control"
     value="@(b.ValidUntil?.ToString("yyyy-MM-dd") ?? "")"/>
 <small class="text-muted">Fin de validité (optionnel).</small>
 </div>
 
-<div class="col-md-3 d-flex align-items-center gap-3">
+<div class="col-12 col-md-4 d-flex flex-wrap align-items-center gap-2 gap-md-3">
 <input type="hidden" name="Bonuses[@bIndex].IsAutomatic" value="false" />
 <label>@if (b.IsAutomatic){<input type="checkbox" name="Bonuses[@bIndex].IsAutomatic" value="true" checked/>}else{<input type="checkbox" name="Bonuses[@bIndex].IsAutomatic" value="true"/>} Automatique</label>
 <input type="hidden" name="Bonuses[@bIndex].IsTaxable" value="false" />
@@ -238,8 +238,8 @@ bIndex++;
 <button type="button" class="btn btn-outline-danger btn-sm remove-advantage">Supprimer</button>
 </div>
 
-<div class="row">
-<div class="col-md-3">
+<div class="row g-2 g-md-3">
+<div class="col-6 col-md-3">
 <select name="Advantages[@vIndex].AdvantageTypeId" class="form-select" onchange="handleTypeChange(this, 'AdvantageType')">
 <option value="">-- Sélectionner --</option>
 @foreach (var t in advantageTypes)
@@ -254,24 +254,24 @@ bIndex++;
 <small class="text-muted">Choisissez l'avantage accordé.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <input type="number" name="Advantages[@vIndex].Value" class="form-control" step="0.01" value="@v.Value"/>
 <small class="text-muted">Valeur monétaire de l'avantage.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-2">
 <input type="date" name="Advantages[@vIndex].StartDate" class="form-control"
        value="@v.StartDate.ToString("yyyy-MM-dd")"/>
 <small class="text-muted">Date de début de l'avantage.</small>
 </div>
 
-<div class="col-md-2">
+<div class="col-6 col-md-3">
 <input type="date" name="Advantages[@vIndex].EndDate" class="form-control"
-       value="@(v.EndDate?.ToString("yyyy-MM-dd") ?? "")"/>
+       value="@(v.EndDate?.ToString("yyyy-MM-dd") ?? "")" />
 <small class="text-muted">Optionnel : fin prévue.</small>
 </div>
 
-<div class="col-md-2 d-flex align-items-center">
+<div class="col-6 col-md-2 d-flex align-items-center">
 <input type="hidden" name="Advantages[@vIndex].IsActive" value="false" />
 @if (v.IsActive){<input type="checkbox" name="Advantages[@vIndex].IsActive" value="true" checked/>}
 else{<input type="checkbox" name="Advantages[@vIndex].IsActive" value="true"/>}

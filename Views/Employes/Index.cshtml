@@ -5,13 +5,13 @@
 }
 
 <!-- Page Header -->
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
     <div>
         <span class="label">Gestion du Personnel</span>
         <h1 class="mt-2">Annuaire des Employés</h1>
         <p class="mono">@Model.Count() employé(s) enregistré(s)</p>
     </div>
-    <a asp-action="Create" class="btn btn-primary">
+    <a asp-action="Create" class="btn btn-primary w-100 w-md-auto">
         + Nouvel Employé
     </a>
 </div>
