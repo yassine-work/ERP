@@ -58,8 +58,8 @@
         Informations du Candidat
     </div>
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-4 border-end">
+        <div class="row g-3">
+            <div class="col-md-4 border-end-md">
                 <span class="label text-muted">Identité</span>
                 <h3 class="mt-2 mb-2">@Model.Candidat?.Prenom @Model.Candidat?.Nom</h3>
                 <p class="mono mb-1">@Model.Candidat?.Email</p>
@@ -68,7 +68,7 @@
                     <p class="mono mb-0">@Model.Candidat.Telephone</p>
                 }
             </div>
-            <div class="col-md-4 border-end">
+            <div class="col-md-4 border-end-md">
                 <span class="label text-muted">Poste visé</span>
                 <h4 class="mt-2 mb-1">@Model.JobOffer?.Title</h4>
                 <p class="mb-0">
@@ -110,8 +110,8 @@
     <div class="card-header">
         Progression du Recrutement
     </div>
-    <div class="card-body py-4">
-        <div class="d-flex justify-content-between align-items-start position-relative">
+    <div class="card-body py-4" style="overflow-x: auto;">
+        <div class="d-flex justify-content-between align-items-start position-relative" style="min-width: 500px;">
             <!-- Progress Line -->
             <div class="position-absolute" style="top: 24px; left: 10%; right: 10%; height: 2px; background: var(--newsprint-muted); z-index: 0;"></div>
             <div class="position-absolute" style="top: 24px; left: 10%; height: 2px; background: var(--newsprint-fg); z-index: 1; width: @((currentStageIndex) * 20)%;"></div>

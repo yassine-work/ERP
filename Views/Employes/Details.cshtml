@@ -23,7 +23,7 @@
     var anciennete = (DateTime.Now - Model.DateEmbauche).Days / 365;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
     <div>
         <h1 class="h2"><i class="bi bi-person-badge me-2"></i>@Model.Nom @Model.Prenom</h1>
         <nav aria-label="breadcrumb">
@@ -33,7 +33,7 @@
             </ol>
         </nav>
     </div>
-    <div class="btn-group">
+    <div class="d-flex gap-2 flex-wrap">
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning"><i class="bi bi-pencil me-1"></i>Modifier</a>
         <a asp-controller="Equipment" asp-action="Assign" asp-route-employeeId="@Model.Id" class="btn btn-info"><i class="bi bi-pc-display me-1"></i>Équipement</a>
         <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>Supprimer</a>
@@ -127,20 +127,22 @@
     <div class="card-body p-0">
         @if (Model.CompensationPackages != null && Model.CompensationPackages.Any())
         {
+            <div class="table-responsive">
             <table class="table table-hover mb-0">
-                <thead class="table-light"><tr><th>Salaire</th><th>Début</th><th>Fin</th><th>Statut</th></tr></thead>
+                <thead class="table-light"><tr><th>Salaire</th><th class="d-none d-sm-table-cell">Début</th><th class="d-none d-md-table-cell">Fin</th><th>Statut</th></tr></thead>
                 <tbody>
                 @foreach (var p in Model.CompensationPackages.OrderByDescending(x => x.EffectiveFrom))
                 {
                     <tr class="@(p.IsActive ? "table-success" : "")">
                         <td><strong>@p.BaseSalary.ToString("N2") TND</strong></td>
-                        <td>@p.EffectiveFrom.ToString("dd/MM/yyyy")</td>
-                        <td>@(p.EffectiveTo?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td class="d-none d-sm-table-cell">@p.EffectiveFrom.ToString("dd/MM/yyyy")</td>
+                        <td class="d-none d-md-table-cell">@(p.EffectiveTo?.ToString("dd/MM/yyyy") ?? "-")</td>
                         <td><span class="badge @(p.IsActive ? "bg-success" : "bg-secondary")">@(p.IsActive ? "Actif" : "Inactif")</span></td>
                     </tr>
                 }
                 </tbody>
             </table>
+            </div>
         }
         else { <div class="text-center py-4 text-muted">Aucun package</div> }
     </div>
@@ -154,21 +156,23 @@
     <div class="card-body p-0">
         @if (Model.EquipmentAssignments != null && Model.EquipmentAssignments.Any(a => a.ReturnDate == null))
         {
+            <div class="table-responsive">
             <table class="table table-hover mb-0">
-                <thead class="table-light"><tr><th>Équipement</th><th>Type</th><th>Code</th><th>Date</th><th>Actions</th></tr></thead>
+                <thead class="table-light"><tr><th>Équipement</th><th class="d-none d-sm-table-cell">Type</th><th class="d-none d-md-table-cell">Code</th><th class="d-none d-md-table-cell">Date</th><th class="text-end">Actions</th></tr></thead>
                 <tbody>
                 @foreach (var a in Model.EquipmentAssignments.Where(x => x.ReturnDate == null).OrderByDescending(x => x.AssignmentDate))
                 {
                     <tr>
                         <td><strong>@a.Equipment?.Name</strong></td>
-                        <td><span class="badge bg-info">@a.Equipment?.EquipmentType?.Name</span></td>
-                        <td><code>@a.Equipment?.InventoryCode</code></td>
-                        <td>@a.AssignmentDate.ToString("dd/MM/yyyy")</td>
-                        <td><a asp-controller="Equipment" asp-action="Return" asp-route-id="@a.Equipment?.EquipmentId" class="btn btn-sm btn-outline-warning"><i class="bi bi-box-arrow-in-left"></i></a></td>
+                        <td class="d-none d-sm-table-cell"><span class="badge bg-info">@a.Equipment?.EquipmentType?.Name</span></td>
+                        <td class="d-none d-md-table-cell"><code>@a.Equipment?.InventoryCode</code></td>
+                        <td class="d-none d-md-table-cell">@a.AssignmentDate.ToString("dd/MM/yyyy")</td>
+                        <td class="text-end"><a asp-controller="Equipment" asp-action="Return" asp-route-id="@a.Equipment?.EquipmentId" class="btn btn-sm btn-outline-warning"><i class="bi bi-box-arrow-in-left"></i></a></td>
                     </tr>
                 }
                 </tbody>
             </table>
+            </div>
         }
         else { <div class="text-center py-4 text-muted">Aucun équipement</div> }
     </div>

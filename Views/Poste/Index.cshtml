@@ -3,31 +3,42 @@
     ViewBag.Title = "Posts";
 }
 
-<h2>Posts</h2>
-<a class="btn btn-primary mb-3" asp-action="Create">Create New Post</a>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
+    <h2 class="mb-0">Posts</h2>
+    <a class="btn btn-primary w-100 w-md-auto" asp-action="Create">Create New Post</a>
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Department</th>
-            <th>Minimum Salary</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var poste in Model)
-        {
-            <tr>
-                <td>@poste.Title</td>
-                <td>@poste.Department</td>
-                <td>@poste.MinimumBaseSalary.ToString("C")</td>
-                <td>
-                    <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@poste.PosteId">Details</a>
-                    <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@poste.PosteId">Edit</a>
-                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@poste.PosteId">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Department</th>
+                    <th class="d-none d-md-table-cell">Minimum Salary</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var poste in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@poste.Title</strong>
+                            <span class="d-md-none d-block mono" style="font-size: 0.8rem;">@poste.MinimumBaseSalary.ToString("C")</span>
+                        </td>
+                        <td>@poste.Department</td>
+                        <td class="d-none d-md-table-cell">@poste.MinimumBaseSalary.ToString("C")</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a class="btn btn-secondary" asp-action="Details" asp-route-id="@poste.PosteId" title="Details"><i class="bi bi-eye"></i></a>
+                                <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@poste.PosteId" title="Edit"><i class="bi bi-pencil"></i></a>
+                                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@poste.PosteId" title="Delete"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

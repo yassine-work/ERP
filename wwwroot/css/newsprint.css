@@ -775,6 +775,21 @@ body {
 }
 
 /* === RESPONSIVE === */
+
+/* Border-end only on md+ (utility class for stacked info cards) */
+@media (min-width: 768px) {
+    .border-end-md {
+        border-right: 1px solid var(--newsprint-muted) !important;
+    }
+}
+
+/* Width utility: auto on md+ */
+@media (min-width: 768px) {
+    .w-md-auto {
+        width: auto !important;
+    }
+}
+
 @media (max-width: 991px) {
     .navbar-brand {
         border-right: none;
@@ -826,6 +841,16 @@ body {
     .table-responsive {
         font-size: 0.875rem;
     }
+
+    .table thead th {
+        font-size: 0.65rem;
+        padding: 0.75rem 0.5rem;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 0.75rem 0.5rem;
+    }
     
     /* Mobile card improvements */
     .card-body {
@@ -835,6 +860,11 @@ body {
     /* Mobile button groups */
     .btn-group-sm > .btn {
         padding: 0.25rem 0.4rem;
+    }
+
+    .btn-group .btn {
+        font-size: 0.65rem;
+        padding: 0.4rem 0.6rem;
     }
     
     /* Mobile form improvements */
@@ -850,11 +880,46 @@ body {
     /* Footer mobile */
     .footer {
         text-align: center;
+        position: relative;
     }
     
     .footer .text-md-end {
         text-align: center !important;
         margin-top: 0.5rem;
+    }
+
+    /* Stats ticker mobile */
+    .stats-ticker {
+        font-size: 0.65rem;
+    }
+
+    .stats-ticker .container {
+        gap: 0.5rem !important;
+    }
+
+    /* Mobile buttons */
+    .btn {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.75rem;
+        min-height: 38px;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.65rem;
+        min-height: 32px;
+    }
+
+    /* Prevent text overflow */
+    .card-header {
+        font-size: 0.7rem;
+        padding: 0.75rem 1rem;
+    }
+
+    /* DL (definition list) responsive */
+    dl.row dt,
+    dl.row dd {
+        font-size: 0.85rem;
     }
 }
 
@@ -868,21 +933,36 @@ body {
     .d-flex.gap-2 {
         gap: 0.5rem !important;
     }
-    
+
+    /* Full-width buttons on xs */
     .btn {
-        font-size: 0.875rem;
-        padding: 0.375rem 0.75rem;
+        font-size: 0.7rem;
+        padding: 0.5rem 0.75rem;
     }
-    
-    /* Stack buttons on very small screens */
-    .d-flex.gap-2.flex-wrap {
-        flex-direction: column;
+
+    /* Stack filter form items */
+    .row.g-3 > [class*='col-md'] {
+        margin-bottom: 0.5rem;
     }
-    
-    .d-flex.gap-2.flex-wrap .btn {
-        width: 100%;
-    animation: marquee 30s linear infinite;
-}
+
+    /* Make badges smaller */
+    .badge {
+        font-size: 0.6rem;
+        padding: 0.3rem 0.5rem;
+    }
+
+    /* Compact avatar */
+    .avatar-circle {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 0.65rem !important;
+    }
+
+    /* Narrower table cells */
+    .table tbody td,
+    .table thead th {
+        padding: 0.5rem 0.35rem;
+    }
 
 /* Focus states for accessibility */
 *:focus-visible {

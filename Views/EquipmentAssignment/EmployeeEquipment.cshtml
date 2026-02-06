@@ -11,18 +11,18 @@
 <div class="card mb-3">
     <div class="card-body">
         <dl class="row mb-0">
-            <dt class="col-sm-2">Employé</dt>
-            <dd class="col-sm-4">
+            <dt class="col-sm-3 col-5">Employé</dt>
+            <dd class="col-sm-9 col-7">
                 <a asp-controller="Employes" asp-action="Details" asp-route-id="@Model.Id">
                     @Model.Prenom @Model.Nom
                 </a>
             </dd>
-            <dt class="col-sm-2">Poste</dt>
-            <dd class="col-sm-4">@Model.Poste?.Title (@Model.Poste?.Department)</dd>
-            <dt class="col-sm-2">Email</dt>
-            <dd class="col-sm-4">@Model.Email</dd>
-            <dt class="col-sm-2">Date d'embauche</dt>
-            <dd class="col-sm-4">@Model.DateEmbauche.ToShortDateString()</dd>
+            <dt class="col-sm-3 col-5">Poste</dt>
+            <dd class="col-sm-9 col-7">@Model.Poste?.Title (@Model.Poste?.Department)</dd>
+            <dt class="col-sm-3 col-5">Email</dt>
+            <dd class="col-sm-9 col-7">@Model.Email</dd>
+            <dt class="col-sm-3 col-5">Embauche</dt>
+            <dd class="col-sm-9 col-7">@Model.DateEmbauche.ToShortDateString()</dd>
         </dl>
     </div>
 </div>
@@ -30,15 +30,17 @@
 <h4>Équipements actuellement attribués <span class="badge bg-primary">@activeAssignments.Count</span></h4>
 @if (activeAssignments.Any())
 {
-    <table class="table table-striped">
-        <thead class="table-primary">
+    <div class="card mb-3">
+    <div class="table-responsive">
+    <table class="table mb-0">
+        <thead>
             <tr>
                 <th>Équipement</th>
-                <th>Type</th>
-                <th>Code</th>
-                <th>Date attribution</th>
-                <th>État</th>
-                <th>Actions</th>
+                <th class="d-none d-md-table-cell">Type</th>
+                <th class="d-none d-lg-table-cell">Code</th>
+                <th class="d-none d-sm-table-cell">Date</th>
+                <th class="d-none d-md-table-cell">État</th>
+                <th class="text-end">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -47,15 +49,16 @@
                 <tr>
                     <td>
                         <a asp-controller="Equipment" asp-action="Details" asp-route-id="@assignment.EquipmentId">
-                            @assignment.Equipment?.Name
+                            <strong>@assignment.Equipment?.Name</strong>
                         </a>
                         <br />
                         <small class="text-muted">@assignment.Equipment?.Brand @assignment.Equipment?.Model</small>
+                        <span class="d-md-none d-block mt-1"><span class="badge bg-info">@assignment.Equipment?.EquipmentType?.Name</span></span>
                     </td>
-                    <td><span class="badge bg-info">@assignment.Equipment?.EquipmentType?.Name</span></td>
-                    <td><code>@assignment.Equipment?.InventoryCode</code></td>
-                    <td>@assignment.AssignmentDate.ToShortDateString()</td>
-                    <td>
+                    <td class="d-none d-md-table-cell"><span class="badge bg-info">@assignment.Equipment?.EquipmentType?.Name</span></td>
+                    <td class="d-none d-lg-table-cell"><code>@assignment.Equipment?.InventoryCode</code></td>
+                    <td class="d-none d-sm-table-cell">@assignment.AssignmentDate.ToShortDateString()</td>
+                    <td class="d-none d-md-table-cell">
                         @switch (assignment.ConditionAtAssignment)
                         {
                             case ERP.Models.AssignmentCondition.New:
@@ -72,15 +75,17 @@
                                 break;
                         }
                     </td>
-                    <td>
+                    <td class="text-end">
                         <a asp-controller="Equipment" asp-action="Return" asp-route-id="@assignment.EquipmentId" class="btn btn-sm btn-warning">
-                            Retourner
+                            <i class="bi bi-box-arrow-in-left"></i><span class="d-none d-md-inline ms-1">Retourner</span>
                         </a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+    </div>
+    </div>
 }
 else
 {
@@ -92,15 +97,17 @@ else
 <h4 class="mt-4">Historique des équipements <span class="badge bg-secondary">@pastAssignments.Count</span></h4>
 @if (pastAssignments.Any())
 {
-    <table class="table table-striped">
+    <div class="card mb-3">
+    <div class="table-responsive">
+    <table class="table mb-0">
         <thead>
             <tr>
                 <th>Équipement</th>
-                <th>Type</th>
-                <th>Attribution</th>
-                <th>Retour</th>
-                <th>Durée</th>
-                <th>État retour</th>
+                <th class="d-none d-md-table-cell">Type</th>
+                <th class="d-none d-sm-table-cell">Attribution</th>
+                <th class="d-none d-sm-table-cell">Retour</th>
+                <th class="d-none d-md-table-cell">Durée</th>
+                <th class="d-none d-lg-table-cell">État retour</th>
             </tr>
         </thead>
         <tbody>
@@ -109,13 +116,14 @@ else
                 <tr>
                     <td>
                         <a asp-controller="Equipment" asp-action="Details" asp-route-id="@assignment.EquipmentId">
-                            @assignment.Equipment?.Name
+                            <strong>@assignment.Equipment?.Name</strong>
                         </a>
+                        <span class="d-md-none d-block mt-1"><span class="badge bg-info">@assignment.Equipment?.EquipmentType?.Name</span></span>
                     </td>
-                    <td><span class="badge bg-info">@assignment.Equipment?.EquipmentType?.Name</span></td>
-                    <td>@assignment.AssignmentDate.ToShortDateString()</td>
-                    <td>@assignment.ReturnDate?.ToShortDateString()</td>
-                    <td>
+                    <td class="d-none d-md-table-cell"><span class="badge bg-info">@assignment.Equipment?.EquipmentType?.Name</span></td>
+                    <td class="d-none d-sm-table-cell">@assignment.AssignmentDate.ToShortDateString()</td>
+                    <td class="d-none d-sm-table-cell">@assignment.ReturnDate?.ToShortDateString()</td>
+                    <td class="d-none d-md-table-cell">
                         @{
                             var days = (assignment.ReturnDate.Value - assignment.AssignmentDate).Days;
                             if (days >= 30)
@@ -128,7 +136,7 @@ else
                             }
                         }
                     </td>
-                    <td>
+                    <td class="d-none d-lg-table-cell">
                         @if (assignment.ConditionAtReturn.HasValue)
                         {
                             @switch (assignment.ConditionAtReturn.Value)
@@ -152,6 +160,8 @@ else
             }
         </tbody>
     </table>
+    </div>
+    </div>
 }
 else
 {
